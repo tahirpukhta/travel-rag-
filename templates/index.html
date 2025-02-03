@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <h2>Featured Hotels</h2>
+        {% for hotel in hotels %}
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">{{ hotel.name }}</h5>
+                <p class="card-text">{{ hotel.description }}</p>
+                <p class="text-muted">${{ hotel.price }} per night</p>
+                <small class="text-muted">Location: {{ hotel.location }}</small>
+            </div>
+        </div>
+        {% else %}
+        <div class="alert alert-info">No hotels found.</div>
+        {% endfor %}
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Search Hotels</h5>
+                <form>
+                    <div class="mb-3">
+                        <input type="text" class="form-control" placeholder="Destination">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Search</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

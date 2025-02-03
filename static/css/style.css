@@ -1,0 +1,18 @@
+body {
+    background-color: #f8f9fa;
+}
+
+.card {
+    margin-bottom: 1.5rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.075);
+    border-radius: 0.5rem;
+}
+
+.navbar {
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.alert {
+    margin-top: 1rem;
+}
