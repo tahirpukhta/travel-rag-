@@ -1,7 +1,7 @@
 # Travel-RAG
 
 ## Overview
-Travel-RAG is a Flask-based travel booking website that allows users to browse and list hotels, with AI-powered FAQs and review analysis using Retrieval-Augmented Generation (RAG).
+Travel-RAG is an AI-powered travel planning and booking website that allows users to browse and list hotels. It also features AI-powered FAQs, review analysis, and intelligent hotel recommendations, using Retrieval-Augmented Generation (RAG).
 
 ## Features
 - User authentication (login/logout)
@@ -38,7 +38,7 @@ Travel-RAG is a Flask-based travel booking website that allows users to browse a
    ```
 
 ## Future Enhancements
-- User registration
+- User Registration
 - Hotel booking system
 - Advanced search and filters
 - RAG-based chatbot
