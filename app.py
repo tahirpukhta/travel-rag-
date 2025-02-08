@@ -50,6 +50,11 @@ class Review(db.Model):
     content = db.Column(db.Text, nullable=False)
     embedding = db.Column(db.BLOB)#store vector embedding for RAG.
 
+#Flask login loader
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
 #Routes-lets go!
 @app.route('/')
 def home():
