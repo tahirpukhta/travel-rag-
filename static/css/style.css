@@ -1,18 +1,56 @@
+/* General Styles */
 body {
     background-color: #f8f9fa;
+    font-family:'Poppins', sans-serif;
 }
-
+/* Navbar */
+.navbar {
+    margin-bottom: 2rem;
+    padding: 1rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.navbar-brand {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #fff;
+}
+.navbar-nav .nav-link {
+    color: #fff;
+    font-size: 1rem;
+    margin-right: 1rem;
+    transition: color 0.3s ease-in-out;
+}
+.navbar-nav .nav-link:hover{
+    color: #ffd700;
+}
+/* Card Styles*/
 .card {
     margin-bottom: 1.5rem;
     box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.075);
     border-radius: 0.5rem;
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
 }
-
-.navbar {
-    margin-bottom: 2rem;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.25rem 0.5rem rgba(0,0,0,0.15);
 }
-
+/* Alerts */
 .alert {
     margin-top: 1rem;
+    border-radius: 0.25rem;
+    font-weight: 500;
+}
+/* Buttons */
+.btn-primary {
+    background-color: #0056b3;
+    border-color: #004085;
+}
+/* Responsive Navbar*/
+@media (max-width: 768px) {
+    .navbar-nav{
+        text-align: center;
+    }
+    .navbar-nav .nav-link {
+        margin: 0.5rem 0;
+    }
 }
