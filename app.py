@@ -75,6 +75,26 @@ def login():
             flash('Invalid credentials', 'danger')
     return render_template('login.html')
 
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method=='POST':
+        username=request.form.get('username')
+        email=request.form.get('email')
+        password=request.form.get('password')
+        
+        if User.query.filter_by(email=email).first():
+            flash('Email already exists!','danger')
+            return redirect(url_for('register'))
+        
+        new_user=User(username=username, email=email)
+        new_user.set_password(password) #use secure hashing
+        db.session.add(new_user)
+        db.session.commit()
+
+        flash('Registration successful! Please login.', 'success')
+        return redirect(url_for('login'))
+    return render_template('register.html')
+
 #Initialize Database
 with app.app_context():
     db.create_all()
