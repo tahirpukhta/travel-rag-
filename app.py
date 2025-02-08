@@ -68,7 +68,8 @@ def login():
         password = request.form.get('password')
         user = User.query.filter_by(email=email).first()
         #verify the password
-        if user and check_password_hash(user.password, password):
+        if user and user.check_password(password):
+            login_user(user)
             flash('Login successful!', 'success')
             return redirect(url_for('home'))
         else:
