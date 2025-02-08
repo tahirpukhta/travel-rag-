@@ -1,6 +1,7 @@
 #import the necessary moduloes for web routing, form handling, database hyandling, and secure password handling
 from flask import Flask, render_template, redirect, url_for, request, flash
 from flask_sqlalchemy import SQLAlchemy
+from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 
 #Flask app intialization
@@ -11,14 +12,20 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.secret_key = 'supersecretkey' #secret key for session management.(replace in production(find some free tier cloud application platform :p)
 #initialize sqlalchemy(database ORM)
 db = SQLAlchemy(app)
+login_manager=LoginManager(app)
+login_manager.login_view='login'
 
 #Database Models
-class User(db.Model):
+class User(UserMixin, db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), unique=True, nullable=False)
     email = db.Column(db.String(100), unique=True, nullable=False)
-    password = db.Column(db.String(255), nullable=False)
+    password_hash = db.Column(db.String(255), nullable=False) #renamed from password.
+    def set_password(self, password):
+        self.password_hash=generate_password_hash(password) #using werkzeug method.
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
 
 class Hotel(db.Model):
     __tablename__ = 'hotels'
