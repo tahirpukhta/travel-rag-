@@ -46,7 +46,7 @@ class Hotel(db.Model):
     price = db.Column(db.Numeric(10,2), nullable=False)
     description = db.Column(db.Text)
     #owner = db.relationship('User', backref='hotels')#establishing relationship, one user can own multiple hotels.
-    amenities=db.Column(db.String(200))
+    amenities= db.Column(db.String(200))
 
 class FAQ(db.Model):
     __tablename__ = 'faqs'
@@ -59,8 +59,10 @@ class Review(db.Model):
     __tablename__ = 'reviews'
     id = db.Column(db.Integer, primary_key=True)
     content = db.Column(db.Text, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    hotel_id = db.Column(db.Integer, db.ForeignKey('hotels.id'), nullable=False)
     embedding = db.Column(db.LargeBinary)#store vector embedding for RAG.
-
+    sentiment= db.Column(db.String(20))
 #Flask login loader
 @login_manager.user_loader
 def load_user(user_id):
