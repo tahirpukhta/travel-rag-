@@ -8,7 +8,7 @@ import secrets
 #Flask app intialization
 app=Flask(__name__)
 #Configure database settings
-app.config['SQLALCHEMY_DATABASE_URI']='mysql+pymysql://root:my%40sql%40data%40000@localhost/travel_db'
+app.config['SQLALCHEMY_DATABASE_URI']= os.getenv('DATABASE_URL','mysql+pymysql://root:my%40sql%40data%40000@localhost/travel_db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 #Generate a secret key if not in an env variable
 secret_key=os.getenv('SECRET_KEY')
