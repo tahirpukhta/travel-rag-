@@ -10,10 +10,8 @@ app=Flask(__name__)
 #Configure database settings
 app.config['SQLALCHEMY_DATABASE_URI']= os.getenv('DATABASE_URL','mysql+pymysql://root:my%40sql%40data%40000@localhost/travel_db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-#Generate a secret key if not in an env variable
-secret_key=os.getenv('SECRET_KEY')
-if secret_key is None:
-    secret_key=secrets.token_urlsafe(32)
+#Secure secret key handling
+secret_key=os.getenv('SECRET_KEY') or secrets.token_urlsafe(32)
 app.secret_key = secret_key
 #initialize sqlalchemy(database ORM)
 db = SQLAlchemy(app)
@@ -24,8 +22,8 @@ login_manager.login_view='login'
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(50), unique=True, nullable=False)
-    email = db.Column(db.String(100), unique=True, nullable=False)
+    username = db.Column(db.String(50), unique=True, nullable=False, index=True)
+    email = db.Column(db.String(100), unique=True, nullable=False, index=True)
     password_hash = db.Column(db.String(255), nullable=False) #renamed from password.
     def set_password(self, password):
         if len(password)<8:
@@ -38,8 +36,8 @@ class Hotel(db.Model):
     __tablename__ = 'hotels'
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)#Links hotel to a user(owner)
-    name = db.Column(db.String(100), nullable=False)
-    location = db.Column(db.String(100), nullable=False)
+    name = db.Column(db.String(100), nullable=False, index=True)
+    location = db.Column(db.String(100), nullable=False, index=True)
     price = db.Column(db.Numeric(10,2), nullable=False)
     description = db.Column(db.Text)
     owner = db.relationship('User', backref='hotels')#establishing relationship, one user can own multiple hotels.
