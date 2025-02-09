@@ -25,6 +25,7 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String(50), unique=True, nullable=False, index=True)
     email = db.Column(db.String(100), unique=True, nullable=False, index=True)
     password_hash = db.Column(db.String(255), nullable=False) #renamed from password.
+    role = db.Column(db.String(20), default='customer')
     def set_password(self, password):
         if len(password)<8:
             raise ValueError("Password must be at least 8 characters")
