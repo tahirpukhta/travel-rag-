@@ -3,13 +3,18 @@ from flask import Flask, render_template, redirect, url_for, request, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
-
+import os
+import secrets
 #Flask app intialization
 app=Flask(__name__)
 #Configure database settings
 app.config['SQLALCHEMY_DATABASE_URI']='mysql+pymysql://root:my%40sql%40data%40000@localhost/travel_db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.secret_key = 'supersecretkey' #secret key for session management.(replace in production(find some free tier cloud application platform :p)
+#Generate a secret key if not in an env variable
+secret_key=os.getenv('SECRET_KEY')
+if secret_key is None:
+    secret_key=secrets.token_urlsafe(32)
+app.secret_key = secret_key
 #initialize sqlalchemy(database ORM)
 db = SQLAlchemy(app)
 login_manager=LoginManager(app)
