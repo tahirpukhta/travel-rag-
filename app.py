@@ -25,7 +25,11 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String(50), unique=True, nullable=False, index=True)
     email = db.Column(db.String(100), unique=True, nullable=False, index=True)
     password_hash = db.Column(db.String(255), nullable=False) #renamed from password.
-    role = db.Column(db.String(20), default='customer')
+    role = db.Column(db.String(20), default='customer') #this added role will also help for RAG differentiation.
+    #Relationships
+    hotels=db.relationship('Hotel', backref='owner', lazy=True)
+    reviews=db.relationship('Review', backref='author', lazy=True)
+    
     def set_password(self, password):
         if len(password)<8:
             raise ValueError("Password must be at least 8 characters")
@@ -41,7 +45,8 @@ class Hotel(db.Model):
     location = db.Column(db.String(100), nullable=False, index=True)
     price = db.Column(db.Numeric(10,2), nullable=False)
     description = db.Column(db.Text)
-    owner = db.relationship('User', backref='hotels')#establishing relationship, one user can own multiple hotels.
+    #owner = db.relationship('User', backref='hotels')#establishing relationship, one user can own multiple hotels.
+    amenities=db.Column(db.String(200))
 
 class FAQ(db.Model):
     __tablename__ = 'faqs'
