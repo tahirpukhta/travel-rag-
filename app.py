@@ -53,13 +53,13 @@ class FAQ(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     question = db.Column(db.Text, nullable=False)
     answer = db.Column(db.Text, nullable=False)
-    embedding = db.Column(db.BLOB)#store vector embedding for RAG.
+    embedding = db.Column(db.LargeBinary)#store vector embedding for RAG.
 
 class Review(db.Model):
     __tablename__ = 'reviews'
     id = db.Column(db.Integer, primary_key=True)
     content = db.Column(db.Text, nullable=False)
-    embedding = db.Column(db.BLOB)#store vector embedding for RAG.
+    embedding = db.Column(db.LargeBinary)#store vector embedding for RAG.
 
 #Flask login loader
 @login_manager.user_loader
