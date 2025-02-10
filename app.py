@@ -5,6 +5,7 @@ from flask_login import LoginManager, UserMixin, login_user, login_required, log
 from werkzeug.security import generate_password_hash, check_password_hash
 import os
 import secrets
+from rag_handler import RAGSystem
 #Flask app intialization
 app=Flask(__name__)
 #Configure database settings
@@ -17,7 +18,8 @@ app.secret_key = secret_key
 db = SQLAlchemy(app)
 login_manager=LoginManager(app)
 login_manager.login_view='login'
-
+#Initialize RAG system.
+rag=RAGSystem(db)
 #Database Models
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
