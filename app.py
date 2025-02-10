@@ -65,10 +65,19 @@ class Review(db.Model):
     hotel_id = db.Column(db.Integer, db.ForeignKey('hotels.id'), nullable=False)
     embedding = db.Column(db.LargeBinary)#store vector embedding for RAG.
     sentiment= db.Column(db.String(20))
+
 #Flask login loader
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
+
+#Initialize vector store once.
+with app.app_context():
+    try:
+        rag._load_faqs_into_vectorstore()
+        print("Successfully loaded FAQs into ChromaDB")
+    except Exception as e:
+        print(f"Error initializing vector store:{str(e)}")
 
 #Routes-lets go!
 @app.route('/')
