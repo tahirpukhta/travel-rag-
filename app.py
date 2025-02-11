@@ -71,11 +71,12 @@ class Review(db.Model):
 def load_user(user_id):
     return User.query.get(int(user_id))
 
-#Initialize vector store once.
+#Initialize vector store once(Load both FAQs and reviews into ChromaDB)
 with app.app_context():
     try:
         rag._load_faqs_into_vectorstore()
-        print("Successfully loaded FAQs into ChromaDB")
+        rag._load_reviews_into_vectorstore()
+        print("Successfully loaded FAQs and reviews into ChromaDB")
     except Exception as e:
         print(f"Error initializing vector store:{str(e)}")
 
