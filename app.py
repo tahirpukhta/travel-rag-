@@ -144,6 +144,22 @@ def logout():
     logout_user()
     return redirect(url_for('home'))
 
+#Review submission handler
+@app.route('/submit_review', methods=['POST'])
+@login_required
+def submit_review():
+    hotel_id=request.form.get('hotel_id')
+    content=request.form.get('content')
+
+    new_review=Review(user_id=current_user.id, hotel_id=hotel_id, content=content)
+    try:
+        db.session.add(new_review)
+        db.session.commit()
+        rag._load_reviews_into_vectorstore() #update vectorstore with the new review.
+        flash('Review submitted successfully!', 'success')
+    except Exception as e:
+        flash(f'Error: {str(e)}', 'danger')
+    return redirect(url_for('hotel_details', hotel_id=hotel_id))
 
 #Initialize Database
 with app.app_context():
