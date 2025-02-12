@@ -36,8 +36,8 @@ class User(UserMixin, db.Model):
         if len(password)<8:
             raise ValueError("Password must be at least 8 characters")
         self.password_hash=generate_password_hash(password) #using werkzeug method.
-    #def check_password(self, password):
-        #return check_password_hash(self.password_hash, password)
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
 
 class Hotel(db.Model):
     __tablename__ = 'hotels'
@@ -85,6 +85,12 @@ with app.app_context():
 def home():
     hotels = Hotel.query.all() 
     return render_template('index.html', hotels=hotels)
+
+@app.route('/hotel/<int:hotel_id>')
+def hotel_details(hotel_id):
+    hotel=Hotel.query.get_or_404(hotel_id)
+    reviews=Review.query.filter_by(hotel_id=hotel_id).all()
+    return render_template('hotel_details.html', hotel=hotel, reviews=reviews)
 
 @app.route('/query', methods=['POST'])
 @login_required
