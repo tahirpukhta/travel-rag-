@@ -40,6 +40,24 @@ class RAGSystem:
         metadatas = [{"source": "faq", "id": faq.id} for faq in faqs]
         self.vector_store.add_texts(texts=documents, metadatas=metadatas)
         self.vector_store.persist()
+    
+    def _load_reviews_into_vectorstore(self):
+        """Load reviews into ChromaDB"""
+        reviews = self.db.session.query(Review).all()
+        documents = [
+            f"Review: {review.content}"
+            for review in reviews
+        ]
+        metadatas = [
+            {
+                "source": "review",
+                "user_id": review.user_id,
+                "hotel_id": review.hotel_id
+            }
+            for review in reviews
+        ]
+        self.vector_store.add_texts(texts=documents, metadatas=metadatas)
+        self.vector_store.persist()
 
     def get_retriever(self, threshold=0.7):
         """Create a LangChain retriever with score threshold"""
