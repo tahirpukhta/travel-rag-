@@ -67,14 +67,21 @@ class RAGSystem:
 
     def query_system(self, question, role="customer"):
         """Full RAG pipeline using LangChain components"""
-        # Load latest FAQs (you could schedule this periodically)
+        # Load both FAQs and Reviews.
         self._load_faqs_into_vectorstore()
+        self._load_reviews_into_vectorstore()
+        
+        # modify retriever for owners to focus on reviews
+        if role=="owner":
+            retriever=self.vector_store.as_retriever(search_kwargs={"k":5, "filter":{"source":"review"}})
+        else:
+            retriever=self.get_retriever()    
         
         # Create the QA chain
         qa_chain = RetrievalQA.from_chain_type(
             llm=self.llm,
             chain_type="stuff",
-            retriever=self.get_retriever(),
+            retriever=retriever,
             return_source_documents=True
         )
         
