@@ -3,7 +3,7 @@ from langchain.vectorstores import Chroma
 from langchain.chains import RetrievalQA
 from langchain.llms import HuggingFacePipeline
 from transformers import pipeline
-from app import FAQ, Review
+from models import db, FAQ, Review
 import numpy as np
 
 class RAGSystem:
