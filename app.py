@@ -1,70 +1,31 @@
 #import the necessary moduloes for web routing, form handling, database hyandling, and secure password handling
 from flask import Flask, render_template, redirect, url_for, request, flash
 from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
-from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 import os
 import secrets
 from rag_handler import RAGSystem
+from models import db, User, Hotel, FAQ, Review
+
 #Flask app intialization
 app=Flask(__name__)
+
 #Configure database settings
 app.config['SQLALCHEMY_DATABASE_URI']= os.getenv('DATABASE_URL','mysql+pymysql://root:my%40sql%40data%40000@localhost/travel_db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
 #Secure secret key handling
 secret_key=os.getenv('SECRET_KEY') or secrets.token_urlsafe(32)
 app.secret_key = secret_key
-#initialize sqlalchemy(database ORM)
-db = SQLAlchemy(app)
+
+#initialize the database with Flask app.
+db.init_app(app)
+
 login_manager=LoginManager(app)
 login_manager.login_view='login'
-#Initialize RAG system.
+
+#Initialize RAG system with db connection.
 rag=RAGSystem(db)
-#Database Models
-class User(UserMixin, db.Model):
-    __tablename__ = 'users'
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(50), unique=True, nullable=False, index=True)
-    email = db.Column(db.String(100), unique=True, nullable=False, index=True)
-    password_hash = db.Column(db.String(255), nullable=False) #renamed from password.
-    role = db.Column(db.String(20), default='customer') #this added role will also help for RAG differentiation.
-    #Relationships
-    hotels=db.relationship('Hotel', backref='owner', lazy=True)
-    reviews=db.relationship('Review', backref='author', lazy=True)
-    
-    def set_password(self, password):
-        if len(password)<8:
-            raise ValueError("Password must be at least 8 characters")
-        self.password_hash=generate_password_hash(password) #using werkzeug method.
-    def check_password(self, password):
-        return check_password_hash(self.password_hash, password)
-
-class Hotel(db.Model):
-    __tablename__ = 'hotels'
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)#Links hotel to a user(owner)
-    name = db.Column(db.String(100), nullable=False, index=True)
-    location = db.Column(db.String(100), nullable=False, index=True)
-    price = db.Column(db.Numeric(10,2), nullable=False)
-    description = db.Column(db.Text)
-    #owner = db.relationship('User', backref='hotels')#establishing relationship, one user can own multiple hotels.
-    amenities= db.Column(db.String(200))
-
-class FAQ(db.Model):
-    __tablename__ = 'faqs'
-    id = db.Column(db.Integer, primary_key=True)
-    question = db.Column(db.Text, nullable=False)
-    answer = db.Column(db.Text, nullable=False)
-    embedding = db.Column(db.LargeBinary)#store vector embedding for RAG.
-
-class Review(db.Model):
-    __tablename__ = 'reviews'
-    id = db.Column(db.Integer, primary_key=True)
-    content = db.Column(db.Text, nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    hotel_id = db.Column(db.Integer, db.ForeignKey('hotels.id'), nullable=False)
-    embedding = db.Column(db.LargeBinary)#store vector embedding for RAG.
-    sentiment= db.Column(db.String(20))
 
 #Flask login loader
 @login_manager.user_loader
