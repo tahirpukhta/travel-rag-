@@ -47,19 +47,22 @@ class Hotel(db.Model):
     #Relationships
     faqs = db.relationship('FAQ', backref='hotel', lazy=True)  # A hotel can have multiple FAQs
     reviews = db.relationship('Review', backref='hotel', lazy=True)  # A hotel can have multiple reviews
-    
+
 class FAQ(db.Model):
     __tablename__ = 'faqs'
     id = db.Column(db.Integer, primary_key=True)
+    hotel_id = db.Column(db.Integer, db.ForeignKey('hotels.id'), nullable=False) #Links the FAQ to a specific hotel.
     question = db.Column(db.Text, nullable=False)
     answer = db.Column(db.Text, nullable=False)
-    embedding = db.Column(db.LargeBinary)#store vector embedding for RAG.
+    embedding = db.Column(db.LargeBinary)#store vector embedding for RAG search.
 
 class Review(db.Model):
     __tablename__ = 'reviews'
     id = db.Column(db.Integer, primary_key=True)
-    content = db.Column(db.Text, nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    hotel_id = db.Column(db.Integer, db.ForeignKey('hotels.id'), nullable=False)
+    content = db.Column(db.Text, nullable=False) # review content provided by the user.
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False) #links review to the user.
+    hotel_id = db.Column(db.Integer, db.ForeignKey('hotels.id'), nullable=False) #links review to the hotel being reviewed
     embedding = db.Column(db.LargeBinary)#store vector embedding for RAG.
-    sentiment= db.Column(db.String(20))
+    sentiment= db.Column(db.String(20)) # field to store sentiment analysis result(positive, negative, neutral)
+    rating = db.Column(db.Numeric(2,1)) # Numeric rating by user.
+    created_at = db.Column(db.DateTime, default=datetime.utcnow) #timestamp when the review was created
