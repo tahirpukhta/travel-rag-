@@ -66,6 +66,9 @@ class Hotel(db.Model):
     #Relationships
     faqs = db.relationship('FAQ', backref='hotel', lazy=True)  # A hotel can have multiple FAQs
     reviews = db.relationship('Review', backref='hotel', lazy=True)  # A hotel can have multiple reviews
+    rooms = db.relationship('Room', backref='hotel', lazy=True) #A hotel can have multiple rooms.
+    places = db.relationship('Place', backref='hotel', lazy=True) #A hotel may be associated with multiple places of interest.
+    amenities = db.relationship('HotelAmenity', backref='hotel', lazy=True) #A hotel can offer various amenities.
 
 class HotelAmenity(db.Model):
     __tablename__= 'hotel_amenities'
