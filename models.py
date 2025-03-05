@@ -23,6 +23,9 @@ booking_status_enum = Enum('Pending', 'Confirmed', 'Cancelled', name='booking_st
 # ENUM for types of places associated with a hotel (e.g., nearby attractions)
 place_type_enum = Enum('monument', 'restaurant', 'museum', 'park', name='place_type_enum')
 
+# ENUM for customer preference categories (e.g., food, budget, etc.)
+preference_type_enum = Enum('food', 'budget', 'activities', 'amenities', name='preference_type_enum')
+
 #Database Models
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
@@ -142,6 +145,19 @@ class Place(db.Model):
     hotel_id = db.Column(db.Integer, db.ForeignKey('hotels.id'))
     api_source = db.Column(db.String(50)) #source api for the place data
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+class CustomerPreference(db.Model):
+    __tablename__ = 'customer_preferences'
+    id = db.Column(db.Integer, primary_key=True) # Unique identifier for each preference entry
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    preference_type = db.Column(preference_type_enum)
+    preference_value = db.Column(db.String(100), nullable=False)
+    weight = db.Column(db.SmallInteger, default=1)
+    
+
+
+
+
 
 
 
