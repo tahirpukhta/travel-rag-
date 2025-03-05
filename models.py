@@ -1,9 +1,14 @@
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
+from sqlalchemy import Enum
+from datetime import datetime
 
-#Create an instance of sqlalchemy.
+#Create an instance of sqlalchemy for interacting with the database.
 db=SQLAlchemy()
+
+#Define custom ENUM types for various model fields using the generic Enum
+user_role_enum = Enum('customer', 'property_owner', name='user_role_enum')
 
 #Database Models
 class User(UserMixin, db.Model):
@@ -12,7 +17,9 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String(50), unique=True, nullable=False, index=True)
     email = db.Column(db.String(100), unique=True, nullable=False, index=True)
     password_hash = db.Column(db.String(255), nullable=False) #renamed from password.
-    role = db.Column(db.String(20), default='customer') #this added role will also help for RAG differentiation.
+    role = db.Column(user_role_enum, default='customer') #this added role will also help for RAG differentiation.
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    last_login = db.Column(db.DateTime)
     #Relationships
     hotels=db.relationship('Hotel', backref='owner', lazy=True)
     reviews=db.relationship('Review', backref='author', lazy=True)
