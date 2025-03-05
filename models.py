@@ -127,5 +127,21 @@ class Itinerary(db.Model):
     title = db.Column(db.String(150), nullable=False)
     description = db.Column(db.Text)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    
+
+class Place(db.Model):
+    __tablename__='places' 
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(150), nullable=False)
+    type = db.Column(place_type_enum)
+    location = db.Column(db.String(150))
+    latitude = db.Column(db.Numeric(10,8))
+    longitude = db.Column(db.Numeric(11,8))
+    description = db.Column(db.Text) #detailed description of the place.
+    hotel_id = db.Column(db.Integer, db.ForeignKey('hotels.id'))
+    api_source = db.Column(db.String(50)) #source api for the place data
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+
+
+
 
