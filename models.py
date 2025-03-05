@@ -1,7 +1,7 @@
-from flask_sqlalchemy import SQLAlchemy
-from flask_login import UserMixin
-from werkzeug.security import generate_password_hash, check_password_hash
-from sqlalchemy import Enum
+from flask_sqlalchemy import SQLAlchemy #Enables ORM operations with Flask
+from flask_login import UserMixin # helper methods for user authentication
+from werkzeug.security import generate_password_hash, check_password_hash # provides functions to hash and check passwords
+from sqlalchemy import Enum # allows usage of a generic ENUM type across different databases
 from datetime import datetime
 
 #Create an instance of sqlalchemy for interacting with the database.
@@ -15,14 +15,15 @@ class User(UserMixin, db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), unique=True, nullable=False, index=True)
+    contact_number = db.Column(db.String(20), nullable=False, index=True)
     email = db.Column(db.String(100), unique=True, nullable=False, index=True)
     password_hash = db.Column(db.String(255), nullable=False) #renamed from password.
     role = db.Column(user_role_enum, default='customer') #this added role will also help for RAG differentiation.
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     last_login = db.Column(db.DateTime)
     #Relationships
-    hotels=db.relationship('Hotel', backref='owner', lazy=True)
-    reviews=db.relationship('Review', backref='author', lazy=True)
+    hotels=db.relationship('Hotel', backref='owner', lazy=True) # One user can own multiple hotels
+    reviews=db.relationship('Review', backref='author', lazy=True) # One user can write multiple reviews
     
     def set_password(self, password):
         if len(password)<8:
@@ -34,14 +35,19 @@ class User(UserMixin, db.Model):
 class Hotel(db.Model):
     __tablename__ = 'hotels'
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)#Links hotel to a user(owner)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)#FK linking hotel to its owner.
     name = db.Column(db.String(100), nullable=False, index=True)
     location = db.Column(db.String(100), nullable=False, index=True)
+    latitude = db.Column(db.Numeric(10, 8))
+    longitude = db.Column(db.Numeric(11, 8))
     price = db.Column(db.Numeric(10,2), nullable=False)
     description = db.Column(db.Text)
-    #owner = db.relationship('User', backref='hotels')#establishing relationship, one user can own multiple hotels.
-    amenities= db.Column(db.String(200))
-
+    check_in_time = db.Column(db.Time)  # Check-in time for guests
+    check_out_time = db.Column(db.Time)  # Check-out time for guests
+    #Relationships
+    faqs = db.relationship('FAQ', backref='hotel', lazy=True)  # A hotel can have multiple FAQs
+    reviews = db.relationship('Review', backref='hotel', lazy=True)  # A hotel can have multiple reviews
+    
 class FAQ(db.Model):
     __tablename__ = 'faqs'
     id = db.Column(db.Integer, primary_key=True)
