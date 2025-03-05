@@ -17,6 +17,10 @@ home_type_enum = Enum('Apartment', 'Villa', 'Hotel Room', name='home_type_enum')
 # ENUM for room types available within a hotel
 room_type_enum = Enum('Private', 'Shared', 'Entire Place', name='room_type_enum')
 
+# ENUM for booking statuses with possible states 'Pending', 'Confirmed', or 'Cancelled'
+booking_status_enum = Enum('Pending', 'Confirmed', 'Cancelled', name='booking_status_enum')
+
+
 #Database Models
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
@@ -77,7 +81,17 @@ class RoomAmenity(db.Model):
     id = db.Column(db.Integer, primary_key=True) #unique id for each room amenity.
     room_id = db.Column(db.Integer, db.ForeignKey('rooms.id'), nullable=False) #Links the amenity to a specific room
     amenity_name = db.Column(db.String(100), nullable=False)
-    
+
+class Booking(db.Model):
+    __tablename__ = 'bookings'
+    id = db.Column(db.Integer, primary_key=True) #uniqe idnetifier for each booking
+    guest_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False) #links the booking to the guest
+    start_date = db.Column(db.Date, nullable=False)
+    end_date = db.Column(db.Date, nullable=False)
+    total_price = db.Column(db.Numeric(10, 2), nullable=False)  # Total price for the booking period
+    status = db.Column(booking_status_enum, default='Pending')
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
 
 class FAQ(db.Model):
     __tablename__ = 'faqs'
