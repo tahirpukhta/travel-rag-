@@ -92,6 +92,14 @@ class Booking(db.Model):
     status = db.Column(booking_status_enum, default='Pending')
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
+class BookingDetail(db.Model):
+    __tablename__='booking_details'
+    id = db.Column(db.Integer, primary_key=True) #unique identifier for each booking detail record
+    booking_id = db.Column(db.Integer, db.ForeignKey('bookings.id'), nullable=False) #links detail top a specific booking.
+    room_id = db.Column(db.Integer, db.ForeignKey('rooms.id'), nullable=False) # links detail to a specific room
+    quantity = db.Column(db.Integer, nullable=False, default=1) #number of rooms booked in this detaail.
+    price_per_room = db.Column(db.Numeric(10,2), nullable=False)
+    subtotal = db.Column(db.Numeric(10,2), nullable=False) #subtotal cost for this booking detail.
 
 class FAQ(db.Model):
     __tablename__ = 'faqs'
