@@ -40,7 +40,10 @@ class User(UserMixin, db.Model):
     #Relationships
     hotels=db.relationship('Hotel', backref='owner', lazy=True) # One user can own multiple hotels
     reviews=db.relationship('Review', backref='author', lazy=True) # One user can write multiple reviews
-    
+    bookings = db.relationship('Booking', backref='guest', lazy=True) #one user can have multiple bookings.
+    itineraries = db.relationship('Itinerary', backref='creator', lazy=True) #one user can create severral itineraries.
+    preferences = db.relationship('CustomerPreference', backref='customer', lazy=True) #one user can have multiple customer preferences.
+
     def set_password(self, password):
         if len(password)<8:
             raise ValueError("Password must be at least 8 characters")
@@ -162,7 +165,7 @@ class APICache(db.Model):
     response = db.Column(db.JSON, nullable=False) #the JSON response from the API stored for caching
     expires_at = db.Column(db.DateTime, nullable=False)  # Expiration timestamp for the cached API response
     created_at = db.Column(db.DateTime, default=datetime.utcnow) #Timestamp when the cache record was created
-    
+
 
 
 
