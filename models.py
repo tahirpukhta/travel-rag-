@@ -8,7 +8,14 @@ from datetime import datetime
 db=SQLAlchemy()
 
 #Define custom ENUM types for various model fields using the generic Enum
+# ENUM for user roles with possible values 'customer' or 'property_owner'
 user_role_enum = Enum('customer', 'property_owner', name='user_role_enum')
+
+# ENUM for home types offered by hotels
+home_type_enum = Enum('Apartment', 'Villa', 'Hotel Room', name='home_type_enum')
+
+# ENUM for room types available within a hotel
+room_type_enum = Enum('Private', 'Shared', 'Entire Place', name='room_type_enum')
 
 #Database Models
 class User(UserMixin, db.Model):
@@ -53,6 +60,17 @@ class HotelAmenity(db.Model):
     id = db.Column(db.integer, primary_key=True) # Unique identifier for each amenity
     hotel_id = db.Column(db.Integer, db.ForeignKey('hotels.id'), nullable=False)  # Links the amenity to a specific hotel
     amenity = db.Column(db.String(50), nullable=False)  # Name of the amenity (e.g., pool, gym)
+
+class Room(db.Model):
+    __tablename__='rooms'
+    id = db.Column(db.Integer, primary_key=True)
+    hotel_id = db.Column(db.Integer, db.ForeignKey('hotels.id'), nullable=False) #FK linking the room to its hotel
+    price = db.Column(db.Numeric(10,2), nullable=False) #price for booking the room
+    home_type = db.Column(home_type_enum, nullable=False) #type of home
+    bed_count = db.Column(db.Integer, nullable=False)
+    summary=db.Column(db.Text) #description of the room.
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)  # Timestamp when the room was added
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)  # Timestamp updated on each modification
 
 class FAQ(db.Model):
     __tablename__ = 'faqs'
