@@ -105,7 +105,10 @@ class Booking(db.Model):
     total_price = db.Column(db.Numeric(10, 2), nullable=False)  # Total price for the booking period
     status = db.Column(booking_status_enum, default='Pending')
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    #Relationship
+    booking_details = db.relationship('BookingDetail', backref='booking', lazy=True) # a booking can have multiple detailed entries
     
+
 class BookingDetail(db.Model):
     __tablename__='booking_details'
     id = db.Column(db.Integer, primary_key=True) #unique identifier for each booking detail record
