@@ -118,4 +118,14 @@ class Review(db.Model):
     embedding = db.Column(db.LargeBinary)#store vector embedding for RAG.
     sentiment= db.Column(db.String(20)) # field to store sentiment analysis result(positive, negative, neutral)
     rating = db.Column(db.Numeric(2,1)) # Numeric rating by user.
-    created_at = db.Column(db.DateTime, default=datetime.utcnow) #timestamp when the review was created
+    created_at = db.Column(db.DateTime, default=datetime.utcnow) #timestamp when the review was created.
+
+class Itinerary(db.Model):
+    __tablename__ = 'itineraries'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    title = db.Column(db.String(150), nullable=False)
+    description = db.Column(db.Text)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+
