@@ -20,6 +20,8 @@ room_type_enum = Enum('Private', 'Shared', 'Entire Place', name='room_type_enum'
 # ENUM for booking statuses with possible states 'Pending', 'Confirmed', or 'Cancelled'
 booking_status_enum = Enum('Pending', 'Confirmed', 'Cancelled', name='booking_status_enum')
 
+# ENUM for types of places associated with a hotel (e.g., nearby attractions)
+place_type_enum = Enum('monument', 'restaurant', 'museum', 'park', name='place_type_enum')
 
 #Database Models
 class User(UserMixin, db.Model):
@@ -140,6 +142,7 @@ class Place(db.Model):
     hotel_id = db.Column(db.Integer, db.ForeignKey('hotels.id'))
     api_source = db.Column(db.String(50)) #source api for the place data
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
 
 
 
