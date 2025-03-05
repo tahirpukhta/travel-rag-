@@ -153,7 +153,21 @@ class CustomerPreference(db.Model):
     preference_type = db.Column(preference_type_enum)
     preference_value = db.Column(db.String(100), nullable=False)
     weight = db.Column(db.SmallInteger, default=1)
+
+class APICache(db.Model):
+    __tablename__='api_cache'
+    id = db.Column(db.Integer, primary_key=True) #unique identifier for each cache record.
+    api_name = db.Column(db.String(50), nullable=False) #name of the API whose response is being cached.
+    parameters = db.Column(db.Text, nullable=False) #parameters used in the API request(stored as text)
+    response = db.Column(db.JSON, nullable=False) #the JSON response from the API stored for caching
+    expires_at = db.Column(db.DateTime, nullable=False)  # Expiration timestamp for the cached API response
+    created_at = db.Column(db.DateTime, default=datetime.utcnow) #Timestamp when the cache record was created
     
+
+
+
+
+
 
 
 
