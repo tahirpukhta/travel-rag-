@@ -72,6 +72,13 @@ class Room(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)  # Timestamp when the room was added
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)  # Timestamp updated on each modification
 
+class RoomAmenity(db.Model):
+    __tablename__='room_amenities'
+    id = db.Column(db.Integer, primary_key=True) #unique id for each room amenity.
+    room_id = db.Column(db.Integer, db.ForeignKey('rooms.id'), nullable=False) #Links the amenity to a specific room
+    amenity_name = db.Column(db.String(100), nullable=False)
+    
+
 class FAQ(db.Model):
     __tablename__ = 'faqs'
     id = db.Column(db.Integer, primary_key=True)
