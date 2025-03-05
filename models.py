@@ -86,6 +86,9 @@ class Room(db.Model):
     summary=db.Column(db.Text) #description of the room.
     created_at = db.Column(db.DateTime, default=datetime.utcnow)  # Timestamp when the room was added
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)  # Timestamp updated on each modification
+    #Relationships
+    amenities = db.relationship('RoomAmenity', backref='room', lazy=True) #A room has multiple amenities
+    booking_details = db.relationship('BookingDetail', backref='room', lazy=True) # A room can be part of many booking details.
 
 class RoomAmenity(db.Model):
     __tablename__='room_amenities'
@@ -102,7 +105,7 @@ class Booking(db.Model):
     total_price = db.Column(db.Numeric(10, 2), nullable=False)  # Total price for the booking period
     status = db.Column(booking_status_enum, default='Pending')
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-
+    
 class BookingDetail(db.Model):
     __tablename__='booking_details'
     id = db.Column(db.Integer, primary_key=True) #unique identifier for each booking detail record
