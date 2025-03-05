@@ -48,6 +48,12 @@ class Hotel(db.Model):
     faqs = db.relationship('FAQ', backref='hotel', lazy=True)  # A hotel can have multiple FAQs
     reviews = db.relationship('Review', backref='hotel', lazy=True)  # A hotel can have multiple reviews
 
+class HotelAmenity(db.Model):
+    __tablename__= 'hotel_amenities'
+    id = db.Column(db.integer, primary_key=True) # Unique identifier for each amenity
+    hotel_id = db.Column(db.Integer, db.ForeignKey('hotels.id'), nullable=False)  # Links the amenity to a specific hotel
+    amenity = db.Column(db.String(50), nullable=False)  # Name of the amenity (e.g., pool, gym)
+
 class FAQ(db.Model):
     __tablename__ = 'faqs'
     id = db.Column(db.Integer, primary_key=True)
