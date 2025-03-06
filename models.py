@@ -128,6 +128,12 @@ class FAQ(db.Model):
 
 class Review(db.Model):
     __tablename__ = 'reviews'
+    __table_args__=(
+        db.Index('idx_reviews_user','user_id'),
+        db.Index('idx_reviews_hotel','hotel_id'),
+        #create a fulltext index on MySQL
+        db.Index('idx_review_content', 'content', mysql_prefix='FULLTEXT'),
+    )
     id = db.Column(db.Integer, primary_key=True)
     content = db.Column(db.Text, nullable=False) # review content provided by the user.
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False) #links review to the user.
