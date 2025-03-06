@@ -25,3 +25,5 @@ __pycache__/
 # Ignore dataset and large files (if applicable)
 data/raw/
 data/processed/
+#ignore the sql dump file
+current_database.sql

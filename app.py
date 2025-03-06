@@ -1,11 +1,12 @@
 #import the necessary moduloes for web routing, form handling, database hyandling, and secure password handling
 from flask import Flask, render_template, redirect, url_for, request, flash
 from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate 
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 import os
 import secrets
 from rag_handler import RAGSystem
-from models import db, User, Hotel, FAQ, Review
+from models import db # Import only the db instance first
 
 #Flask app intialization
 app=Flask(__name__)
@@ -20,6 +21,10 @@ app.secret_key = secret_key
 
 #initialize the database with Flask app.
 db.init_app(app)
+#initialize Migrate with our app and db.
+migrate = Migrate(app,db)
+# Now import the rest of our models
+from models import User, Hotel, FAQ, Review, HotelAmenity, Room, RoomAmenity, Booking, BookingDetail, Itinerary, Place, CustomerPreference, APICache
 
 login_manager=LoginManager(app)
 login_manager.login_view='login'
