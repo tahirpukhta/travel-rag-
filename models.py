@@ -72,7 +72,7 @@ class Hotel(db.Model):
 
 class HotelAmenity(db.Model):
     __tablename__= 'hotel_amenities'
-    id = db.Column(db.integer, primary_key=True) # Unique identifier for each amenity
+    id = db.Column(db.Integer, primary_key=True) # Unique identifier for each amenity
     hotel_id = db.Column(db.Integer, db.ForeignKey('hotels.id'), nullable=False)  # Links the amenity to a specific hotel
     amenity = db.Column(db.String(50), nullable=False)  # Name of the amenity (e.g., pool, gym)
 
