@@ -128,6 +128,25 @@ def submit_review():
         flash(f'Error: {str(e)}', 'danger')
     return redirect(url_for('hotel_details', hotel_id=hotel_id))
 
+#FAQ submission handler using incremental update method
+@app.route('/submit_faq', methods=['POST'])
+@login_required
+def submit_faq():
+    hotel_id=request.form.get('hotel_id')
+    question = request.form.get('question')
+    answer=request.form.get('answer')
+
+    new_faq=FAQ(hotel_id=hotel_id, question=question, answer=answer)
+    try:
+        db.session.add(new_faq)
+        db.session.commit()
+        # incremental update for the new FAQ in the vector store.
+        rag.add_faq_to_vectorstore(new_faq) #update vectorstore with the new faq.
+        flash('FAQ submitted successfully!', 'success')
+    except Exception as e:
+        flash(f'Error: {str(e)}', 'danger')
+    return redirect(url_for('hotel_details', hotel_id=hotel_id))
+
 #Initialize Database
 with app.app_context():
     db.create_all()
