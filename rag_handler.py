@@ -102,8 +102,10 @@ class RAGSystem:
         # Customize prompt based on user role
         if role == "owner":
             prompt_template = f"""
-            Analyze this travel business query from a property owner. 
-            Use only the provided context to answer:
+            You are an expert travel business advisor analyzing a query from a property owner. 
+            The context provided below contains exclusively customer reviews about your property.
+            Carefully analyze these reviews to extract key feedback, recurring themes, and actionable insights that can help improve your property’s performance.
+            Use only the information provided in the context to base your analysis.
             
             Context: {{context}}
             
@@ -113,8 +115,10 @@ class RAGSystem:
             """
         else:
             prompt_template = f"""
-            You're a friendly travel assistant. Answer the customer's question 
-            using only this context:
+            You are a friendly and knowledgeable travel assistant. 
+            The context provided below includes both frequently asked questions and customer reviews related to the query.
+            Based solely on this context, provide a clear, concise, and helpful answer that addresses the customer's question. 
+            Ensure your response is supportive and actionable, highlighting relevant details from the context.
             
             Context: {{context}}
             
