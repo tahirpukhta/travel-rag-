@@ -59,6 +59,20 @@ class RAGSystem:
         self.vector_store.add_texts(texts=documents, metadatas=metadatas)
         self.vector_store.persist()
 
+    def add_faq_to_vectorstore(self, faq):
+        """Incrementally add a single faq to the vector store"""
+        document = f"Question: {faq.question}\nAnswer: {faq.answer}"
+        metadata = {"source": "faq", "id": faq.id}
+        self.vector_store.add_texts(texts=[document], metadatas=[metadata])
+        self.vector_store.persist() 
+
+    def add_review_to_vectorstore(self, review):
+        """Incrementally add a single review to the vector store"""
+        document = f"Review: {review.content}"
+        metadata = {"source": "review", "user_id": review.user_id, "hotel_id":review.hotel_id}
+        self.vector_store.add_texts(texts=[document], metadatas=[metadata])
+        self.vector_store.persist() 
+
     def get_retriever(self, threshold=0.7):
         """Create a LangChain retriever with score threshold"""
         return self.vector_store.as_retriever(
@@ -67,7 +81,7 @@ class RAGSystem:
 
     def query_system(self, question, role="customer"):
         """Full RAG pipeline using LangChain components"""
-        # Load both FAQs and Reviews.
+        # Load both FAQs and Reviews. Use full methods during query initialization.
         self._load_faqs_into_vectorstore()
         self._load_reviews_into_vectorstore()
         
