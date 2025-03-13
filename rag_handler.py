@@ -86,7 +86,7 @@ class RAGSystem:
         self._load_reviews_into_vectorstore()
         
         # modify retriever for owners to focus on reviews
-        if role=="owner":
+        if role=="property_owner":
             retriever=self.vector_store.as_retriever(search_kwargs={"k":5, "filter":{"source":"review"}})
         else:
             retriever=self.get_retriever()    
@@ -100,7 +100,7 @@ class RAGSystem:
         )
         
         # Customize prompt based on user role
-        if role == "owner":
+        if role == "property_owner":
             prompt_template = f"""
             You are an expert travel business advisor analyzing a query from a property owner. 
             The context provided below contains exclusively customer reviews about your property.
