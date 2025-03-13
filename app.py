@@ -37,7 +37,7 @@ rag=RAGSystem(db)
 def load_user(user_id):
     return User.query.get(int(user_id))
 
-#Initialize vector store once(Load both FAQs and reviews into ChromaDB)
+#On startup, use full reload methods for consistency. 
 with app.app_context():
     try:
         rag._load_faqs_into_vectorstore()
@@ -121,7 +121,8 @@ def submit_review():
     try:
         db.session.add(new_review)
         db.session.commit()
-        rag._load_reviews_into_vectorstore() #update vectorstore with the new review.
+        # incremental update for the new review
+        rag.add_review_to_vectorstore(new_review) #update vectorstore with the new review.
         flash('Review submitted successfully!', 'success')
     except Exception as e:
         flash(f'Error: {str(e)}', 'danger')
