@@ -47,6 +47,7 @@ def load_user(user_id):
 #On startup, use full reload methods for consistency. 
 with app.app_context():
     try:
+        print("Initialising RAG system vector store....")
         rag._load_faqs_into_vectorstore()
         rag._load_reviews_into_vectorstore()
         print("Successfully loaded FAQs and reviews into ChromaDB")
@@ -62,7 +63,7 @@ def home():
 @app.route('/hotel/<int:hotel_id>')
 def hotel_details(hotel_id):
     hotel=Hotel.query.get_or_404(hotel_id)
-    reviews=Review.query.filter_by(hotel_id=hotel_id).all()
+    reviews=Review.query.filter_by(hotel_id=hotel_id).order_by(Review.created_at.desc()).all()
     return render_template('hotel_details.html', hotel=hotel, reviews=reviews)
 
 @app.route('/query', methods=['POST'])
