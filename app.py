@@ -1,13 +1,15 @@
 #import the necessary moduloes for web routing, form handling, database hyandling, and secure password handling
 from flask import Flask, render_template, redirect, url_for, request, flash
-from flask_sqlalchemy import SQLAlchemy
+#from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate 
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 import os
 import secrets
 from rag_handler import RAGSystem
 from models import db # Import only the db instance first
-
+from werkzeug.security import generate_password_hash, check_password_hash
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 #Flask app intialization
 app=Flask(__name__)
 
@@ -28,6 +30,11 @@ from models import User, Hotel, FAQ, Review, HotelAmenity, Room, RoomAmenity, Bo
 
 login_manager=LoginManager(app)
 login_manager.login_view='login'
+
+#rate limiting setup
+limiter=Limiter(app=app,
+                key_func=get_remote_address,
+                default_limits=["200 per day","50 per hour"])
 
 #Initialize RAG system with db connection.
 rag=RAGSystem(db)
