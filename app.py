@@ -85,13 +85,16 @@ def handle_query():
 @app.route('/login', methods=['GET', 'POST'])
 @limiter.limit("10/minute") #limit login attempts
 def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('home')) #prevent already logged in users from accessing login page.
+    
     if request.method == 'POST':
         email = request.form.get('email')
         password = request.form.get('password')
         user = User.query.filter_by(email=email).first()
         #verify the password
         if user and user.check_password(password):
-            login_user(user)
+            login_user(user, remember=request.form.get('remember')) #added remember me functionality.
             flash('Login successful!', 'success')
             return redirect(url_for('home'))
         else:
