@@ -68,6 +68,7 @@ def hotel_details(hotel_id):
 
 @app.route('/query', methods=['POST'])
 @login_required
+@limiter.limit("10/minute")
 def handle_query():
     question = request.form.get('query')
     try:
