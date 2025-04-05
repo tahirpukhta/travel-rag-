@@ -75,10 +75,11 @@ def handle_query():
         flash("Please enter a meaningful question of at least 5 characters","warning")
         return redirect(request.referrer or url_for('home')) #redirect back to where the query form was or home.
     try:
-        result = rag.query_system(question=question, role=current_user.role)
-        return render_template('query_results.html', answer=result['answer'], sources=result['sources'], query=question)
+        result = rag.query_system(question=question.strip(), role=current_user.role)
+        return render_template('query_results.html', answer=result.get('answer','No answer generated'), sources=result.get('sources',[]), query=question)
     except Exception as e:
         flash(f"Error processing query: {str(e)}", 'danger')
+        app.logger.error(f"Query processing error for user{current_user.id}:{e}", exc_info=True) #log the error for debugging purposes.
         return redirect(url_for('home'))
 
 @app.route('/login', methods=['GET', 'POST'])
