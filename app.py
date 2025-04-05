@@ -105,23 +105,44 @@ def login():
     return render_template('login.html')
 
 @app.route('/register', methods=['GET', 'POST'])
+@limiter.limit("5/hour") #limit registration attempts 
 def register():
+    if current_user.is_authenticated:
+        return redirect(url_for('home')) #prevent logged in users from registering
     if request.method=='POST':
-        username=request.form.get('username')
-        email=request.form.get('email')
+        username=request.form.get('username').strip()
+        email=request.form.get('email').strip().lower() #normalize email
         password=request.form.get('password')
+        contact_number=request.form.get('contact_number','').strip() #optional field
         
-        if User.query.filter_by(email=email).first():
-            flash('Email already exists!','danger')
+        #add more robust validation
+        if not username or len(username)<3:
+            flash('Username must be atleast 3 characters long.','warning')
+            return redirect(url_for('register'))
+        if not email or '@' not in email or '.' not in email.split('@')[-1]:
+            flash('Please enter a valid email address.', 'warning')
+            return redirect(url_for('register'))
+        if not password or len(password)<8:
+            flash('Password must be at least 8 characters long.','warning')
             return redirect(url_for('register'))
         
-        new_user=User(username=username, email=email)
-        new_user.set_password(password) #use secure hashing
-        db.session.add(new_user)
-        db.session.commit()
-
-        flash('Registration successful! Please login.', 'success')
-        return redirect(url_for('login'))
+        if User.query.filter_by(email=email).first():
+            flash('Email address already registered. Please login','danger')
+            return redirect(url_for('login'))
+        if User.query.filter_by(username=username).first():
+            flash('Username already taken. Please choose another.', 'warning')
+            return redirect(url_for('register'))
+        try:
+            new_user=User(username=username, email=email, contact_number=contact_number)
+            new_user.set_password(password) #use secure hashing
+            db.session.add(new_user)
+            db.session.commit()
+            flash('Registration successful! Please login.', 'success')
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Registration failed due to an error:{str(e)}','danger')
+            app.logger.error(f"Registration error:{e}, exc_info=True")
+            return redirect(url_for('register'))
     return render_template('register.html')
 
 @app.route('/logout')
