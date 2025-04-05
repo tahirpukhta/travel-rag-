@@ -95,8 +95,11 @@ def login():
         #verify the password
         if user and user.check_password(password):
             login_user(user, remember=request.form.get('remember')) #added remember me functionality.
+            user.last_login=db.func.now() #update last login time.
+            db.session.commit()
             flash('Login successful!', 'success')
-            return redirect(url_for('home'))
+            next_page=request.args.get('next') #for redirecting after login
+            return redirect(next_page or url_for('home'))
         else:
             flash('Invalid credentials', 'danger')
     return render_template('login.html')
