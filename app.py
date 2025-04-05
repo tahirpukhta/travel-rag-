@@ -83,6 +83,7 @@ def handle_query():
         return redirect(url_for('home'))
 
 @app.route('/login', methods=['GET', 'POST'])
+@limiter.limit("10/minute") #limit login attempts
 def login():
     if request.method == 'POST':
         email = request.form.get('email')
