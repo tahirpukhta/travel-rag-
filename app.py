@@ -71,6 +71,9 @@ def hotel_details(hotel_id):
 @limiter.limit("10/minute")
 def handle_query():
     question = request.form.get('query')
+    if not question or len(question.strip())<5:
+        flash("Please enter a meaningful question of at least 5 characters","warning")
+        return redirect(request.referrer or url_for('home')) #redirect back to where the query form was or home.
     try:
         result = rag.query_system(question=question, role=current_user.role)
         return render_template('query_results.html', answer=result['answer'], sources=result['sources'], query=question)
