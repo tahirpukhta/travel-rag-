@@ -64,7 +64,7 @@ def handle_query():
     question = request.form.get('query')
     try:
         result = rag.query_system(question=question, role=current_user.role)
-        return render_template('query_results.html', answer=result['answer'], sources=result['souirces'], query=question)
+        return render_template('query_results.html', answer=result['answer'], sources=result['sources'], query=question)
     except Exception as e:
         flash(f"Error processing query: {str(e)}", 'danger')
         return redirect(url_for('home'))
