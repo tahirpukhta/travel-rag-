@@ -6,6 +6,10 @@ from transformers import pipeline
 from models import db, FAQ, Review
 import numpy as np
 
+#Load sentiment analysis model once
+sentiment_analyzer = pipeline("sentiment-analysis", model="distilbert-base-uncased-finetuned-sst-2-english")
+
+
 class RAGSystem:
     def __init__(self, db_connection):
         # Initialize embeddings
