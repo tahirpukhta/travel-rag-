@@ -143,6 +143,7 @@ class Review(db.Model):
     emotion = db.Column(db.String(20)) #field to store emotion tone of the customer/reviewer
     rating = db.Column(db.Numeric(2,1)) # Numeric rating by user.
     created_at = db.Column(db.DateTime, default=datetime.utcnow) #timestamp when the review was created.
+    ip_address = db.Column(db.String(45))
 
 class Itinerary(db.Model):
     __tablename__ = 'itineraries'

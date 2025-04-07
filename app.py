@@ -218,7 +218,7 @@ def submit_review():
     
     
     # create and save the new review
-    new_review=Review(user_id=current_user.id, hotel_id=hotel_id, content=content, sentiment=sentiment, emotion=emotion)
+    new_review=Review(user_id=current_user.id, hotel_id=hotel_id, content=content, sentiment=sentiment, emotion=emotion, ip_address=request.remote_addr)
     try:
         db.session.add(new_review)
         db.session.commit()
