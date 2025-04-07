@@ -10,7 +10,7 @@ from models import db # Import only the db instance first
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
-from datetime import date
+from datetime import datetime, timedelta, date
 #Flask app intialization
 app=Flask(__name__)
 
@@ -171,12 +171,17 @@ def submit_review():
         flash('Hotel ID is missing.','danger')
         return redirect(url_for('home'))
     
+    #prevent owners reviewing their own propeety
+    if hotel.user_id == current_user.id:
+        flash('You can not review your own propeerty,','warning')
+        return redirect(url_for('hotel_details', hotel_id=hotel_id))
+    
     hotel = Hotel.query.get(hotel_id)
     if not hotel:
         flash('Hotel not found.', 'danger')
         return redirect(url_for('home'))
     
-    #Ensure the customer has completed the booking
+    #completed stay check
     booking = Booking.query.filter_by(
         guest_id=current_user.id, 
         hotel_id=hotel_id, status='Confirmed'
@@ -186,9 +191,14 @@ def submit_review():
         flash('You must cmplete a stay before reviewing.', 'warning')
         return redirect(url_for('hotel_details', hotel_id=hotel_id))
     
-    #prevent owners reviewing their own propeety
-    if hotel.user_id == current_user.id:
-        flash('You can not review your own propeerty,','warning')
+    #IP rate-limit check
+    ip = request.remote_addr
+    recent_count = Review.query.filter_by(hotel_id=hotel_id).filter(
+        Review.created_at>=datetime.utcnow()-timedelta(hours=1),
+        Review.ip_address == ip
+    ).count()
+    if recent_count>3:
+        flash('Too many reviews from this IP recently.', 'warning')
         return redirect(url_for('hotel_details', hotel_id=hotel_id))
     
     #content length validation
