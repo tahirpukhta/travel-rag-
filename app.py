@@ -160,7 +160,12 @@ def submit_review():
     hotel_id=request.form.get('hotel_id')
     content=request.form.get('content', '').strip() #sanitize input by stripping whitespace.
 
-    #basic validation
+    #Role check: only customers may review
+    if current_user.role != 'customer':
+        flash('Only customers can submit reviews','danger')
+        return redirect(request.referrer or url_for('home'))
+    
+    # hotel id and existence validation
     if not hotel_id:
         flash('Hotel ID is missing.','danger')
         return redirect(url_for('home'))
@@ -170,7 +175,12 @@ def submit_review():
         flash('Hotel not found.', 'danger')
         return redirect(url_for('home'))
     
-    #content validation
+    #prevent owners reviewing their own propeety
+    if hotel.user_id == current_user.id:
+        flash('You can not review your own propeerty,','warning')
+        return redirect(url_for('hotel_details', hotel_id=hotel_id))
+    
+    #content length validation
     if not content or len(content)<10:
         flash('Review must be at least 10 characrters long,', 'warning')
         return redirect(url_for('hotel_details', hotel_id=hotel_id))
