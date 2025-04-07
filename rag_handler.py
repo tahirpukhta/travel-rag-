@@ -9,6 +9,9 @@ import numpy as np
 #Load sentiment analysis model once
 sentiment_analyzer = pipeline("sentiment-analysis", model="distilbert-base-uncased-finetuned-sst-2-english")
 
+#Added a multi-class emotion detection model for future use.
+emotion_analyzer = pipeline("text-classification", model="j-hartmann/emotion-english-distilroberta-base", top_k=1 )
+
 def analyze_sentiment(text, threshold=0.7):
     try:
         result = sentiment_analyzer(text[:512])[0]
@@ -22,6 +25,18 @@ def analyze_sentiment(text, threshold=0.7):
         print(f"Sentiment analysis failed: {e}")
         return 'neutral' #or we can return none/ raise a custom exception.
     
+def detect_emotion(text, threshold=0.5):
+    try:
+        result = emotion_analyzer(text[:512])[0][0]
+        emotion = result['label'].lower()
+        score = result['score']
+        if score < threshold:
+            return 'neutral' # confidence is too low bhai.
+        return emotion
+    except Exception as e:
+        print(f"Emotion Detection Error: {e}")
+        return 'neutral'
+
 
 class RAGSystem:
     def __init__(self, db_connection):
