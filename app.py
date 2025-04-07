@@ -209,18 +209,27 @@ def submit_faq():
     question = request.form.get('question', '').strip()
     answer=request.form.get('answer','').strip()
 
+    #basic field validation
     if not hotel_id or not question or not answer:
         flash('All fields(Hotel ID, Question, Answer) are required.', 'warning')
         return redirect(request.referrer or url_for('home')) #redirect back or home.
+    # hotel existence check
     hotel =  Hotel.query.get(hotel_id)
     if not hotel:
         flash('Hotel not found.', 'danger')
         return redirect(url_for('home'))
     
+    #Permission check: onky the hotel owners may add FAQs
+    if hotel.user_id != current_user.id and current_user.role != 'property_owner':
+        flash('You do not have permission toadd FAQs for this hotel.', 'danger')
+        return redirect(url_for('hotel_details', hotel_id=hotel_id))
+
+    #content lemgth validation
     if len(question)<10 and len(answer)<10:
         flash('Question and Answer must be at least 10 characters long','warning')
         return redirect(url_for('hotel_details', hotel_id=hotel_id))
     
+    #create and persist the new FAQ
     new_faq=FAQ(hotel_id=hotel_id, question=question, answer=answer)
     try:
         db.session.add(new_faq)
