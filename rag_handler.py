@@ -47,11 +47,14 @@ class RAGSystem:
             model_name="sentence-transformers/all-MiniLM-L6-v2"
         )
         
+        #add caching- initialize SQLite cache
+        self.cache = SQLiteCache(database_path=".rag_cache.db")
+
         # Initialize LLM
         self.llm = HuggingFacePipeline.from_model_id(
             model_id="google/flan-t5-base",
             task="text2text-generation",
-            model_kwargs={"temperature": 0.1, "max_length": 512}
+            model_kwargs={"temperature": 0.2, "max_length": 512, "device_map":"auto"} #for automatic device placement
         )
         
         # Connect to ChromaDB (persistent storage)
@@ -61,19 +64,25 @@ class RAGSystem:
             persist_directory="./chroma_db"
         )
         
-        # Link with database connection
+        # Link with database connection(SQLAlchemy db object)
         self.db = db_connection
 
     def _load_faqs_into_vectorstore(self):
         """Load FAQs from SQL database into Chroma vector store"""
-        faqs = self.db.session.query(FAQ).all()
-        documents = [
-            f"Question: {faq.question}\nAnswer: {faq.answer}" 
-            for faq in faqs
-        ]
-        metadatas = [{"source": "faq", "id": faq.id} for faq in faqs]
-        self.vector_store.add_texts(texts=documents, metadatas=metadatas)
-        self.vector_store.persist()
+        try:
+            faqs = self.db.session.query(FAQ).all()
+            if not faqs:
+                print("No FAQs found in the database to load.")
+                return
+            documents = [
+                f"Question: {faq.question}\nAnswer: {faq.answer}" 
+                for faq in faqs
+            ]
+            #generate unique ids for chromadb based on FAQ promary key.
+            ids=[f"faq_{faq.id}" for faq in faqs]
+            metadatas = [{"source": "faq", "id": faq.id} for faq in faqs]
+            self.vector_store.add_texts(texts=documents, metadatas=metadatas)
+            self.vector_store.persist()
     
     def _load_reviews_into_vectorstore(self):
         """Load reviews into ChromaDB"""
