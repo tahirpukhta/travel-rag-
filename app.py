@@ -5,7 +5,7 @@ from flask_migrate import Migrate
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 import os
 import secrets
-from rag_handler import RAGSystem, analyze_sentiment
+from rag_handler import RAGSystem, analyze_sentiment, detect_emotion
 from models import db # Import only the db instance first
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_limiter import Limiter
@@ -187,6 +187,9 @@ def submit_review():
         sentiment = analyze_sentiment(content)
         new_review.sentiment = sentiment
         
+        emotion = detect_emotion(content)
+        new_review.emotion = emotion
+
         db.session.add(new_review)
         db.session.commit()
         # incremental update for the new review
