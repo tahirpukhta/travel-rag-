@@ -2,6 +2,8 @@ from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_chroma import Chroma
 from langchain.chains import RetrievalQA
 from langchain_community.llms import HuggingFacePipeline
+from langchain.cache import SQLiteCache #added this for caching query results
+import hashlib #for generating cache keys
 from transformers import pipeline
 from models import db, FAQ, Review
 import numpy as np
