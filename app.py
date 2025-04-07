@@ -200,9 +200,21 @@ def submit_review():
 @login_required
 def submit_faq():
     hotel_id=request.form.get('hotel_id')
-    question = request.form.get('question')
-    answer=request.form.get('answer')
+    question = request.form.get('question', '').strip()
+    answer=request.form.get('answer','').strip()
 
+    if not hotel_id or not question or not answer:
+        flash('All fields(Hotel ID, Question, Answer) are required.', 'warning')
+        return redirect(request.referrer or url_for('home')) #redirect back or home.
+    hotel =  Hotel.query.get(hotel_id)
+    if not hotel:
+        flash('Hotel not found.', 'danger')
+        return redirect(url_for('home'))
+    
+    if len(question)<10 and len(answer)<10:
+        flash('Question and Answer must be at least 10 characters long','warning')
+        return redirect(url_for('hotel_details', hotel_id=hotel_id))
+    
     new_faq=FAQ(hotel_id=hotel_id, question=question, answer=answer)
     try:
         db.session.add(new_faq)
@@ -211,7 +223,9 @@ def submit_faq():
         rag.add_faq_to_vectorstore(new_faq) #update vectorstore with the new faq.
         flash('FAQ submitted successfully!', 'success')
     except Exception as e:
-        flash(f'Error: {str(e)}', 'danger')
+        db .session.rollback()
+        flash(f'Error submitting FAQ: {str(e)}', 'danger')
+        app.logger.error(f"FAQ submission error for hotel{hotel_id} by user{current_user.id}:{e}", exc_info=True)
     return redirect(url_for('hotel_details', hotel_id=hotel_id))
 
 #Initialize Database
