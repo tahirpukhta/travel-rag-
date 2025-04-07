@@ -184,6 +184,9 @@ def submit_review():
     # create and save the new review
     new_review=Review(user_id=current_user.id, hotel_id=hotel_id, content=content)
     try:
+        sentiment = analyze_sentiment(content)
+        new_review.sentiment = sentiment
+        
         db.session.add(new_review)
         db.session.commit()
         # incremental update for the new review
