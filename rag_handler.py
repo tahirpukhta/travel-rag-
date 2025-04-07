@@ -9,6 +9,14 @@ import numpy as np
 #Load sentiment analysis model once
 sentiment_analyzer = pipeline("sentiment-analysis", model="distilbert-base-uncased-finetuned-sst-2-english")
 
+def analyze_sentiment(text):
+    try:
+        result = sentiment_analyzer(text[:512])[0]
+        return result['label'].lower() #positive or negative
+    except Exception as e:
+        print(f"Sentiment analysis failed: {e}")
+        return 'neutral' #or we can return none/ raise a custom exception.
+    
 
 class RAGSystem:
     def __init__(self, db_connection):
