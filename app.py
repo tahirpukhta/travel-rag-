@@ -170,6 +170,12 @@ def submit_review():
         flash('Hotel not found.', 'danger')
         return redirect(url_for('home'))
     
+    #content validation
+    if not content or len(content)<10:
+        flash('Review must be at least 10 characrters long,', 'warning')
+        return redirect(url_for('hotel_details', hotel_id=hotel_id))
+    
+    
     new_review=Review(user_id=current_user.id, hotel_id=hotel_id, content=content)
     try:
         db.session.add(new_review)
