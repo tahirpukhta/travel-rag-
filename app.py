@@ -159,6 +159,16 @@ def logout():
 def submit_review():
     hotel_id=request.form.get('hotel_id')
     content=request.form.get('content', '').strip() #sanitize input by stripping whitespace.
+
+    #basic validation
+    if not hotel_id:
+        flash('Hotel ID is missing.','danger')
+        return redirect(url_for('home'))
+    
+    hotel = Hotel.query.get(hotel_id)
+    if not hotel:
+        flash('Hotel not found.', 'danger')
+        return redirect(url_for('home'))
     
     new_review=Review(user_id=current_user.id, hotel_id=hotel_id, content=content)
     try:
