@@ -158,8 +158,8 @@ def logout():
 @limiter.limit("2/minute") #prevent spam
 def submit_review():
     hotel_id=request.form.get('hotel_id')
-    content=request.form.get('content')
-
+    content=request.form.get('content', '').strip() #sanitize input by stripping whitespace.
+    
     new_review=Review(user_id=current_user.id, hotel_id=hotel_id, content=content)
     try:
         db.session.add(new_review)
