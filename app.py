@@ -191,15 +191,14 @@ def submit_review():
         flash('You have already reviewed this hotel.', 'info')
         return redirect(url_for('hotel_details', hotel_id=hotel_id))
     
+    #Analyze sentiment and emotion
+    sentiment = analyze_sentiment(content)
+    emotion = detect_emotion(content)
+    
+    
     # create and save the new review
-    new_review=Review(user_id=current_user.id, hotel_id=hotel_id, content=content)
+    new_review=Review(user_id=current_user.id, hotel_id=hotel_id, content=content, sentiment=sentiment, emotion=emotion)
     try:
-        sentiment = analyze_sentiment(content)
-        new_review.sentiment = sentiment
-        
-        emotion = detect_emotion(content)
-        new_review.emotion = emotion
-
         db.session.add(new_review)
         db.session.commit()
         # incremental update for the new review
