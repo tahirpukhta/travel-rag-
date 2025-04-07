@@ -181,15 +181,18 @@ def submit_review():
         flash('You have already reviewed this hotel.', 'info')
         return redirect(url_for('hotel_details', hotel_id=hotel_id))
     
+    # create and save the new review
     new_review=Review(user_id=current_user.id, hotel_id=hotel_id, content=content)
     try:
         db.session.add(new_review)
         db.session.commit()
         # incremental update for the new review
         rag.add_review_to_vectorstore(new_review) #update vectorstore with the new review.
-        flash('Review submitted successfully!', 'success')
+        flash('Review submitted successfully! Thank you for your feedback', 'success')
     except Exception as e:
-        flash(f'Error: {str(e)}', 'danger')
+        db.session.rollback() #rollback in case of an error.
+        flash(f'Error submitting review: {str(e)}', 'danger')
+        app.logger.error(f"Review submission error for hotel{hotel_id} by user {current_user.id}: {e}", ecx_info=True)
     return redirect(url_for('hotel_details', hotel_id=hotel_id))
 
 #FAQ submission handler using incremental update method
