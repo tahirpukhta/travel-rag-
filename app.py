@@ -155,6 +155,7 @@ def logout():
 #Review submission handler
 @app.route('/submit_review', methods=['POST'])
 @login_required
+@limiter.limit("2/minute") #prevent spam
 def submit_review():
     hotel_id=request.form.get('hotel_id')
     content=request.form.get('content')
