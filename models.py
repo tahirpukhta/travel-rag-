@@ -140,6 +140,7 @@ class Review(db.Model):
     hotel_id = db.Column(db.Integer, db.ForeignKey('hotels.id'), nullable=False) #links review to the hotel being reviewed
     embedding = db.Column(db.LargeBinary)#store vector embedding for RAG.
     sentiment= db.Column(db.String(20)) # field to store sentiment analysis result(positive, negative, neutral)
+    emotion = db.column(db.string(20)) #field to store emotion tone of the customer/reviewer
     rating = db.Column(db.Numeric(2,1)) # Numeric rating by user.
     created_at = db.Column(db.DateTime, default=datetime.utcnow) #timestamp when the review was created.
 
