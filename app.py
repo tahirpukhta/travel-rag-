@@ -175,6 +175,11 @@ def submit_review():
         flash('Review must be at least 10 characrters long,', 'warning')
         return redirect(url_for('hotel_details', hotel_id=hotel_id))
     
+    #prevent duplicate reviews from same user
+    existing_review = Review.query.filter_by(user_id=current_user.id, hotel_id=hotel_id).first()
+    if existing_review:
+        flash('You have already reviewed this hotel.', 'info')
+        return redirect(url_for('hotel_details', hotel_id=hotel_id))
     
     new_review=Review(user_id=current_user.id, hotel_id=hotel_id, content=content)
     try:
