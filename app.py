@@ -10,6 +10,7 @@ from models import db # Import only the db instance first
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
+from datetime import date
 #Flask app intialization
 app=Flask(__name__)
 
@@ -174,6 +175,16 @@ def submit_review():
     if not hotel:
         flash('Hotel not found.', 'danger')
         return redirect(url_for('home'))
+    
+    #Ensure the customer has completed the booking
+    booking = Booking.query.filter_by(
+        guest_id=current_user.id, 
+        hotel_id=hotel_id, status='Confirmed'
+        ).filter(Booking.end_date<=date.today()).first()
+    
+    if not booking:
+        flash('You must cmplete a stay before reviewing.', 'warning')
+        return redirect(url_for('hotel_details', hotel_id=hotel_id))
     
     #prevent owners reviewing their own propeety
     if hotel.user_id == current_user.id:
