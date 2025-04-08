@@ -70,6 +70,7 @@ class RAGSystem:
     def _load_faqs_into_vectorstore(self):
         """Load FAQs from SQL database into Chroma vector store"""
         try:
+            print("Attempting to load FAQs from database....")
             faqs = self.db.session.query(FAQ).all() #database interaction
             if not faqs:
                 print("No FAQs found in the database to load.")
@@ -88,15 +89,19 @@ class RAGSystem:
                 } 
                 for faq in faqs
             ] 
-            #Adding to Vector Store
-            self.vector_store.add_texts(texts=documents, metadatas=metadatas, ids=ids)
-            #save the changes to the persistent chromadb storage.
-            self.vector_store.persist()
-            print(f"Loaded {len(faqs)} FAQs into vector store.")
+            if documents:
+                #Adding to Vector Store
+                self.vector_store.add_texts(texts=documents, metadatas=metadatas, ids=ids)
+                #save the changes to the persistent chromadb storage.
+                self.vector_store.persist()
+                print(f"Loaded {len(faqs)} FAQs into vector store.")
+            else:
+                print("No valid documents generated to load")
+
         except Exception as e:
             print(f"Error loading FAQs into vector store:{e}")
     def _load_reviews_into_vectorstore(self):
-        """Load reviews into ChromaDB"""
+        """Load all reviews from SQL database into ChromaDB"""
         reviews = self.db.session.query(Review).all()
         documents = [
             f"Review: {review.content}"
