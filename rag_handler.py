@@ -67,6 +67,23 @@ class RAGSystem:
         # Link with database connection(SQLAlchemy db object)
         self.db = db_connection
 
+        #Conditional data loading
+        #Check if the vector store collection seems empty before loading
+        try:
+            current_count = self.vector_store._collection.count()
+            print(f"Vector store current document count: {current_count}")
+            if current_count == 0:
+                print("Vector store appears empty. Performing initial data laod..")
+                self._load_faqs_into_vectorstore()
+                self._load_reviews_into_vectorstore()
+                print("Initial data loading complete.")
+            else:
+                print("Vector store already contains data. Skipping bulk load.")
+        except Exception as e:
+            print(f"Error checking vector store count or performing initial load: {e}")
+            print("Please ensure './chroma_db' is accessible and correctly initialized ")
+        print("RAG sustem intialized.")
+
     def _load_faqs_into_vectorstore(self):
         """Load FAQs from SQL database into Chroma vector store"""
         try:
@@ -166,8 +183,9 @@ class RAGSystem:
     def query_system(self, question, role="customer"):
         """Full RAG pipeline using LangChain components"""
         # Load both FAQs and Reviews. Use full methods during query initialization.
-        self._load_faqs_into_vectorstore()
-        self._load_reviews_into_vectorstore()
+        #self._load_faqs_into_vectorstore()
+        #self._load_reviews_into_vectorstore()
+        #commented out the data loading calls here.
         
         # modify retriever for owners to focus on reviews
         if role=="property_owner":
