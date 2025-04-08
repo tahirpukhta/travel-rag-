@@ -102,21 +102,35 @@ class RAGSystem:
             print(f"Error loading FAQs into vector store:{e}")
     def _load_reviews_into_vectorstore(self):
         """Load all reviews from SQL database into ChromaDB"""
-        reviews = self.db.session.query(Review).all()
-        documents = [
-            f"Review: {review.content}"
-            for review in reviews
-        ]
-        metadatas = [
-            {
-                "source": "review",
-                "user_id": review.user_id,
-                "hotel_id": review.hotel_id
-            }
-            for review in reviews
-        ]
-        self.vector_store.add_texts(texts=documents, metadatas=metadatas)
-        self.vector_store.persist()
+        try:
+            print("Attempting to load Reviews from database...")    
+            reviews = self.db.session.query(Review).all()
+            if not reviews:
+                print("No Reviews found in the database to load")
+                return
+            documents = [
+                f"Review: {review.content}"
+                for review in reviews
+            ]
+            #Generate unique ids for chromadb based Review Primary key.
+            ids = [f"review_{review.id}" for review in reviews]
+            metadatas = [
+                {
+                    "source": "review",
+                    "id" : review.id,
+                    "user_id": review.user_id,
+                    "hotel_id": review.hotel_id
+                }
+                for review in reviews
+            ]
+            if documents:       
+                self.vector_store.add_texts(texts=documents, metadatas=metadatas, ids=ids)
+                self.vector_store.persist()
+                print(f"Loaded {len(reviews)} Reviews into vector store.")
+            else:
+                print("No valid Review documents generated to load.")
+        except Exception as e:
+            print(f"Error loading Reviews into vector store: {e}") 
 
     def add_faq_to_vectorstore(self, faq):
         """Incrementally add a single faq to the vector store"""
