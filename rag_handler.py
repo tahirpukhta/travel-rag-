@@ -70,15 +70,16 @@ class RAGSystem:
     def _load_faqs_into_vectorstore(self):
         """Load FAQs from SQL database into Chroma vector store"""
         try:
-            faqs = self.db.session.query(FAQ).all()
+            faqs = self.db.session.query(FAQ).all() #database interaction
             if not faqs:
                 print("No FAQs found in the database to load.")
                 return
             documents = [
                 f"Question: {faq.question}\nAnswer: {faq.answer}" 
-                for faq in faqs]
-            #generate unique ids for chromadb based on FAQ promary key.
+                for faq in faqs] #creates text documents for embedding
+            #generate unique ids for chromadb based on FAQ primary key.
             ids=[f"faq_{faq.id}" for faq in faqs]
+            #Metadata generation which can helpful for filtering later.
             metadatas = [
                 {
                     "source": "faq", 
@@ -87,7 +88,9 @@ class RAGSystem:
                 } 
                 for faq in faqs
             ] 
+            #Adding to Vector Store
             self.vector_store.add_texts(texts=documents, metadatas=metadatas, ids=ids)
+            #save the changes to the persistent chromadb storage.
             self.vector_store.persist()
             print(f"Loaded {len(faqs)} FAQs into vector store.")
         except Exception as e:
@@ -113,7 +116,7 @@ class RAGSystem:
     def add_faq_to_vectorstore(self, faq):
         """Incrementally add a single faq to the vector store"""
         document = f"Question: {faq.question}\nAnswer: {faq.answer}"
-        metadata = {"source": "faq", "id": faq.id}
+        metadata = {"source": "faq", "id": faq.id, "hotel_id":faq.hotel_id}
         self.vector_store.add_texts(texts=[document], metadatas=[metadata])
         self.vector_store.persist() 
 
