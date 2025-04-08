@@ -146,10 +146,16 @@ class RAGSystem:
 
     def add_review_to_vectorstore(self, review):
         """Incrementally add a single review to the vector store"""
-        document = f"Review: {review.content}"
-        metadata = {"source": "review", "user_id": review.user_id, "hotel_id":review.hotel_id}
-        self.vector_store.add_texts(texts=[document], metadatas=[metadata])
-        self.vector_store.persist() 
+        try:
+            document = f"Review: {review.content}"
+            #use consistent id formatfor potential updates  
+            review_id = f"review_{review.id}"                             
+            metadata = {"source": "review", "id": review.id, "user_id": review.user_id, "hotel_id":review.hotel_id}
+            self.vector_store.add_texts(texts=[document], metadatas=[metadata], ids=[review_id])
+            self.vector_store.persist()
+            print(f"Added Review {review.id} in vector store.") 
+        except Exception as e:
+            print(f"Error adding Review {review.id} to vector store: {e}")
 
     def get_retriever(self, threshold=0.7):
         """Create a LangChain retriever with score threshold"""
