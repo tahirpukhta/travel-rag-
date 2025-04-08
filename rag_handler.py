@@ -132,12 +132,17 @@ class RAGSystem:
         except Exception as e:
             print(f"Error loading Reviews into vector store: {e}") 
 
-    def add_faq_to_vectorstore(self, faq):
+    def add_faq_to_vectorstore(self, faq:FAQ):
         """Incrementally add a single faq to the vector store"""
-        document = f"Question: {faq.question}\nAnswer: {faq.answer}"
-        metadata = {"source": "faq", "id": faq.id, "hotel_id":faq.hotel_id}
-        self.vector_store.add_texts(texts=[document], metadatas=[metadata])
-        self.vector_store.persist() 
+        try:
+            document = f"Question: {faq.question}\nAnswer: {faq.answer}"
+            faq_id = f"faq_{faq.id}" #for consistent id format
+            metadata = {"source": "faq", "id": faq.id, "hotel_id":faq.hotel_id}
+            self.vector_store.add_texts(texts=[document], metadatas=[metadata], ids=[faq_id])
+            self.vector_store.persist()
+            print(f"Added/updated FAQ {faq.id} in vector store.")
+        except Exception as e:
+            print(f"Error adding FAQ {faq.id} to vector store: {e}")
 
     def add_review_to_vectorstore(self, review):
         """Incrementally add a single review to the vector store"""
