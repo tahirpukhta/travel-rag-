@@ -76,14 +76,22 @@ class RAGSystem:
                 return
             documents = [
                 f"Question: {faq.question}\nAnswer: {faq.answer}" 
-                for faq in faqs
-            ]
+                for faq in faqs]
             #generate unique ids for chromadb based on FAQ promary key.
             ids=[f"faq_{faq.id}" for faq in faqs]
-            metadatas = [{"source": "faq", "id": faq.id} for faq in faqs]
-            self.vector_store.add_texts(texts=documents, metadatas=metadatas)
+            metadatas = [
+                {
+                    "source": "faq", 
+                    "id": faq.id, 
+                    "hotel_id":faq.hotel_id
+                } 
+                for faq in faqs
+            ] 
+            self.vector_store.add_texts(texts=documents, metadatas=metadatas, ids=ids)
             self.vector_store.persist()
-    
+            print(f"Loaded {len(faqs)} FAQs into vector store.")
+        except Exception as e:
+            print(f"Error loading FAQs into vector store:{e}")
     def _load_reviews_into_vectorstore(self):
         """Load reviews into ChromaDB"""
         reviews = self.db.session.query(Review).all()
