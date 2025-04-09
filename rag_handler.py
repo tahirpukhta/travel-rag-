@@ -176,10 +176,16 @@ class RAGSystem:
         except Exception as e:
             print(f"Error adding Review {review.id} to vector store: {e}")
 
-    def get_retriever(self, threshold=0.7):
-        """Create a LangChain retriever with score threshold"""
+    def get_retriever(self, k: int = 3, score_threshold: float=0.7, filter_dict: dict = None):
+        """Create a LangChain retriever with specified search parameters."""
+        search_kwargs = {'k':k}
+        if score_threshold is not None:
+            search_kwargs['score_threshold'] = score_threshold
+        if filter_dict is not None:
+            search_kwargs['filter'] = filter_dict
+           
         return self.vector_store.as_retriever(
-            search_kwargs={"k": 3, "score_threshold": threshold}
+            search_kwargs=search_kwargs, search_type="similarity_score_threshold"
         )
 
     def query_system(self, question, role="customer"):
