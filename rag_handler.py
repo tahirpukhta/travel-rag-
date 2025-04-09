@@ -103,7 +103,7 @@ class RAGSystem:
             metadatas = [
                 {
                     "source": "faq", 
-                    "id": faq.id, 
+                    "db_id": faq.id, 
                     "hotel_id":faq.hotel_id
                 } 
                 for faq in faqs
@@ -136,7 +136,7 @@ class RAGSystem:
             metadatas = [
                 {
                     "source": "review",
-                    "id" : review.id,
+                    "db_id" : review.id,
                     "user_id": review.user_id,
                     "hotel_id": review.hotel_id
                 }
@@ -156,7 +156,7 @@ class RAGSystem:
         try:
             document = f"Question: {faq.question}\nAnswer: {faq.answer}"
             faq_id = f"faq_{faq.id}" #for consistent id format
-            metadata = {"source": "faq", "id": faq.id, "hotel_id":faq.hotel_id}
+            metadata = {"source": "faq", "db_id": faq.id, "hotel_id":faq.hotel_id}
             self.vector_store.add_texts(texts=[document], metadatas=[metadata], ids=[faq_id])
             self.vector_store.persist()
             print(f"Added/updated FAQ {faq.id} in vector store.")
@@ -169,7 +169,7 @@ class RAGSystem:
             document = f"Review: {review.content}"
             #use consistent id formatfor potential updates  
             review_id = f"review_{review.id}"                             
-            metadata = {"source": "review", "id": review.id, "user_id": review.user_id, "hotel_id":review.hotel_id}
+            metadata = {"source": "review", "db_id": review.id, "user_id": review.user_id, "hotel_id":review.hotel_id}
             self.vector_store.add_texts(texts=[document], metadatas=[metadata], ids=[review_id])
             self.vector_store.persist()
             print(f"Added Review {review.id} in vector store.") 
