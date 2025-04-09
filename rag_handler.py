@@ -5,6 +5,7 @@ from langchain.cache import SQLiteCache #added this for caching query results
 from langchain.prompts import PromptTemplate
 from langchain.schema.runnable import RunnablePassthrough, RunnableParallel
 from langchain.schema.output_parser import StrOutputParser
+from langchain.docstore.document import Document
 import hashlib #for generating cache keys
 from transformers import pipeline
 from models import db, FAQ, Review
@@ -233,10 +234,9 @@ class RAGSystem:
             template = template,
             input_variables=["context", "question"]
         )
-        
-        # Execute the chain
-        result = qa_chain({"query": question, "prompt": prompt_template})
-        return {
-            "answer": result["result"],
-            "sources": [doc.metadata["source"] for doc in result["source_documents"]]
-        }
+        #RAG Chain using LCEL.
+        #helper function to format retrieved documents into a single context string. 
+        def format_docs(docs: list[Document]) -> str:
+            if not docs:
+                return "No relevant documents found."
+            return "\n\n".join(doc.page_content for doc in docs)
