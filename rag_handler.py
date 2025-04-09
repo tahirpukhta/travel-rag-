@@ -202,41 +202,37 @@ class RAGSystem:
         else:
             retriever=self.get_retriever(k=3)    
         
-        # Create the QA chain
-        qa_chain = RetrievalQA.from_chain_type(
-            llm=self.llm,
-            chain_type="stuff",
-            retriever=retriever,
-            return_source_documents=True
-        )
-        
         # Customize prompt based on user role
         if role == "property_owner":
-            prompt_template = f"""
+            template = f"""
             You are an expert travel business advisor analyzing a query from a property owner. 
             The context provided below contains exclusively customer reviews about your property.
             Carefully analyze these reviews to extract key feedback, recurring themes, and actionable insights that can help improve your property’s performance.
             Use only the information provided in the context to base your analysis.
             
-            Context: {{context}}
+            Context: {context}
             
-            Question: {{question}}
+            Question: {question}
             
             Answer:
             """
         else:
-            prompt_template = f"""
+            template = f"""
             You are a friendly and knowledgeable travel assistant. 
             The context provided below includes both frequently asked questions and customer reviews related to the query.
             Based solely on this context, provide a clear, concise, and helpful answer that addresses the customer's question. 
             Ensure your response is supportive and actionable, highlighting relevant details from the context.
             
-            Context: {{context}}
+            Context: {context}
             
-            Question: {{question}}
+            Question: {question}
             
             Helpful Answer:
             """
+        prompt = PromptTemplate(
+            template = template,
+            input_variables=["context", "question"]
+        )
         
         # Execute the chain
         result = qa_chain({"query": question, "prompt": prompt_template})
