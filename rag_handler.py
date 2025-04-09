@@ -3,6 +3,9 @@ from langchain_chroma import Chroma
 from langchain.chains import RetrievalQA
 from langchain_community.llms import HuggingFacePipeline
 from langchain.cache import SQLiteCache #added this for caching query results
+from langchain.prompts import PromptTemplate
+from langchain.schema.runnable import RunnablePassthrough, RunnableParallel
+from langchain.schema.output_parser import StrOutputParser
 import hashlib #for generating cache keys
 from transformers import pipeline
 from models import db, FAQ, Review
