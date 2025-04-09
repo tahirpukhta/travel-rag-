@@ -188,8 +188,9 @@ class RAGSystem:
             search_kwargs=search_kwargs, search_type="similarity_score_threshold"
         )
 
-    def query_system(self, question, role="customer"):
-        """Full RAG pipeline using LangChain components"""
+    def query_system(self, question: str, role: str="customer"):
+        """Full RAG pipeline using LangChain Expression Language(LCEL)
+        to handle custom prompts based on user role and return sources"""
         # Load both FAQs and Reviews. Use full methods during query initialization.
         #self._load_faqs_into_vectorstore()
         #self._load_reviews_into_vectorstore()
@@ -197,9 +198,9 @@ class RAGSystem:
         
         # modify retriever for owners to focus on reviews
         if role=="property_owner":
-            retriever=self.vector_store.as_retriever(search_kwargs={"k":5, "filter":{"source":"review"}})
+            retriever=self.get_retriever(k=5, filter_dict={"source":"review"})
         else:
-            retriever=self.get_retriever()    
+            retriever=self.get_retriever(k=3)    
         
         # Create the QA chain
         qa_chain = RetrievalQA.from_chain_type(
