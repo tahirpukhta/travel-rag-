@@ -243,8 +243,8 @@ class RAGSystem:
 
         #Define the core chain that generates the answer string.
         rag_chain_core = (
-            {"context": retriever | format_docs, "question": RunnablePassthrough()}
-            | prompt
-            | self.llm
-            | StrOutputParser()
-        ) 
+            {"context": retriever | format_docs, "question": RunnablePassthrough()} #pass the input to the next runnable or chain without any modification.
+            | prompt            # Feed context and question to the prompt
+            | self.llm          # Send formatted prompt to LLM
+            | StrOutputParser() # Get string output from LLM
+        )
