@@ -205,7 +205,7 @@ class RAGSystem:
         
         # Customize prompt based on user role
         if role == "property_owner":
-            template = f"""
+            template = """
             You are an expert travel business advisor analyzing a query from a property owner. 
             The context provided below contains exclusively customer reviews about your property.
             Carefully analyze these reviews to extract key feedback, recurring themes, and actionable insights that can help improve your property’s performance.
@@ -218,7 +218,7 @@ class RAGSystem:
             Answer:
             """
         else:
-            template = f"""
+            template = """
             You are a friendly and knowledgeable travel assistant. 
             The context provided below includes both frequently asked questions and customer reviews related to the query.
             Based solely on this context, provide a clear, concise, and helpful answer that addresses the customer's question. 
@@ -240,3 +240,11 @@ class RAGSystem:
             if not docs:
                 return "No relevant documents found."
             return "\n\n".join(doc.page_content for doc in docs)
+
+        #Define the core chain that generates the answer string.
+        rag_chain_core = (
+            {"context": retriever | format_docs, "question": RunnablePassthrough()}
+            | prompt
+            | self.llm
+            | StrOutputParser()
+        ) 
