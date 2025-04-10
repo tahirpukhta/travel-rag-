@@ -263,6 +263,17 @@ class RAGSystem:
         except Exception as e:
             return {
                 "answer": "Sorry, an error occured while processing your request.",
-                "soyrces": []
+                "sources": []
             }
-        
+        #format and return the output.
+        answer = result.get("answer","Sorry, couldn't generate an answer")
+        sources_metadata = []
+        if "documents" in result and isinstance(result["documents"], list):
+            sources_metadata = [
+                { "source": doc.metadata.get("source", "unknown"), "db_id": doc.metadata.get("db_id", "N/A")}
+                for doc in result["documents"]
+            ]
+        return {
+            "answer" : answer,
+            "sources": sources_metadata
+        }
