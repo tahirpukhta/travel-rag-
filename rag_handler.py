@@ -248,3 +248,9 @@ class RAGSystem:
             | self.llm          # Send formatted prompt to LLM
             | StrOutputParser() # Get string output from LLM
         )
+        #Define a parallel chain to retrieve source documents alonside the answer.
+        rag_chain_with_source = RunnableParallel(
+            {"docs": retriever, "question": RunnablePassthrough()}
+        ) | RunnableParallel(
+            {"answer": rag_chain_core, "documents": lambda x: x["docs"]}
+        )
