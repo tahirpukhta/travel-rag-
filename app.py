@@ -45,16 +45,6 @@ rag=RAGSystem(db)
 def load_user(user_id):
     return User.query.get(int(user_id))
 
-#On startup, use full reload methods for consistency. 
-with app.app_context():
-    try:
-        print("Initialising RAG system vector store....")
-        rag._load_faqs_into_vectorstore()
-        rag._load_reviews_into_vectorstore()
-        print("Successfully loaded FAQs and reviews into ChromaDB")
-    except Exception as e:
-        print(f"Error initializing vector store:{str(e)}")
-
 #Routes-lets go!
 @app.route('/')
 def home():
