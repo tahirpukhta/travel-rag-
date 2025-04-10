@@ -250,7 +250,11 @@ class RAGSystem:
         )
         #Define a parallel chain to retrieve source documents alonside the answer.
         rag_chain_with_source = RunnableParallel(
+            #retrieve documents first, pass them along as 'docs'
             {"docs": retriever, "question": RunnablePassthrough()}
         ) | RunnableParallel(
+            #run the core chain using retrieved docs and question and pass the raw 'docs' through to the final output.
             {"answer": rag_chain_core, "documents": lambda x: x["docs"]}
         )
+
+        
