@@ -257,4 +257,12 @@ class RAGSystem:
             {"answer": rag_chain_core, "documents": lambda x: x["docs"]}
         )
 
+        #Invoke the chain
+        try:
+            result  =  rag_chain_with_source.invoke(question)
+        except Exception as e:
+            return {
+                "answer": "Sorry, an error occured while processing your request.",
+                "soyrces": []
+            }
         
