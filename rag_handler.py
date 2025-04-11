@@ -263,7 +263,7 @@ class RAGSystem:
         rag_chain_core = (
             {"context": retriever | format_docs, "question": RunnablePassthrough()} #pass the input to the next runnable or chain without any modification.
             | prompt            # Feed context and question to the prompt
-            | self.llm          # Send formatted prompt to LLM
+            | llm_for_query          # Send formatted prompt to LLM
             | StrOutputParser() # Get string output from LLM
         )
         #Define a parallel chain to retrieve source documents alonside the answer.
