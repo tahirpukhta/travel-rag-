@@ -1,7 +1,7 @@
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_chroma import Chroma
 from langchain_community.llms import HuggingFacePipeline
-from langchain.cache import SQLiteCache #added this for caching query results
+from langchain_community.cache import SQLiteCache #added this for caching query results
 from langchain.prompts import PromptTemplate
 from langchain.schema.runnable import RunnablePassthrough, RunnableParallel
 from langchain.schema.output_parser import StrOutputParser
@@ -53,11 +53,24 @@ class RAGSystem:
         #add caching- initialize SQLite cache
         self.cache = SQLiteCache(database_path=".rag_cache.db")
 
-        # Initialize LLM
-        self.llm = HuggingFacePipeline.from_model_id(
+        # Initialize LLM 
+        self.llm_deterministic = HuggingFacePipeline.from_model_id(
             model_id="google/flan-t5-base",
             task="text2text-generation",
-            model_kwargs={"temperature": 0.2, "max_length": 512, "device_map":"auto"} #for automatic device placement
+            model_kwargs={
+                "do_sample": False, 
+                "max_length": 512, 
+                "device_map":"auto"} #for automatic device placement
+        )
+
+        self.llm_stochastic = HuggingFacePipeline.from_model_id(
+            model_id="google/flan-t5-base",
+            task="text2text-generation",
+            model_kwargs={
+                "do_sample": True,
+                "temperature": 0.2, 
+                "max_length": 512, 
+                "device_map":"auto"} #for automatic device placement
         )
         
         # Connect to ChromaDB (persistent storage)
