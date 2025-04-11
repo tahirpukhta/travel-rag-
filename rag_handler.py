@@ -210,6 +210,11 @@ class RAGSystem:
         #self._load_reviews_into_vectorstore()
         #commented out the data loading calls here.
         
+        # based on role routing query to correct pipeline.
+        if role == "property_owner":
+            llm_for_query = self.llm_deterministic
+        else:
+            llm_for_query = self.llm_stochastic
         # modify retriever for owners to focus on reviews
         if role=="property_owner":
             retriever=self.get_retriever(k=5, filter_dict={"source":"review"})
