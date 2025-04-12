@@ -1,31 +1,44 @@
 {% extends "base.html" %}
+{% block title %} Query Results{% endblock %}
 {% block content %}
-<div class="row">
-    <div class="col-md-8">
-        <div class="card">
-            <div class="card-header">Query Results</div>
-            <div class="card-body">
-                <h5>Your Query:</h5>
-                <p class="text-muted">{{ query }}</p>
-                <hr>
-                <h5>AI Response:</h5>
-                <div class="bg-light p-3 rounded mb-3">{{ answer }}</div>
-                
-                {% if sources %}
-                <div class="mt-3">
-                    <h6>Sources Used:</h6>
-                    <ul class="list-unstyled">
-                        {% for source in sources %}
-                        <li class="text-muted small">• {{ source }}</li>
-                        {% endfor %}
-                    </ul>
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h4>Query Results</h4>
                 </div>
-                {% endif %}
-                
-                <div class="mt-4">
-                    <a href="/" class="btn btn-primary">
-                        <i class="bi bi-arrow-left"></i> New Search
-                    </a>
+                <div class="card-body">
+                    <h5>Your Query:</h5>
+                    <p class="text-muted font-italic">{{ query }}</p>
+                    <hr>
+                    <h5>AI Response:</h5>
+                    <div class="bg-light p-3 rounded mb-3" style="white-space: pre-wrap;">{{ answer }}</div>
+                    
+                    {% if sources %}
+                    <div class="mt-4">
+                        <h6>Sources Used:</h6>
+                        <ul class="list-group list-group-flush small">
+                            {% for src_info in sources %}
+                            <li class="list-group-item">
+                                <span>
+                                    <i class="bi bi-journal-text me-2"></i>
+                                    Source Type: <strong>{{src_info.source | capitalize}}</strong>
+                                </span>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="mt-4 text-center">
+                        <a href="{{request.refferrer or url_for('home')}}" class="btn btn-outline-secondary me-2">
+                            <i class="bi bi-arrow-left"></i> Back
+                        </a>
+                        <a href="{{url_for('home')}}" class="btn btn-primary">
+                            <i class="bi bi-arrow-left"></i> New Search
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
