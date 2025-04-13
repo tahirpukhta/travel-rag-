@@ -173,10 +173,11 @@ def submit_review():
         return redirect(url_for('hotel_details', hotel_id=hotel_id))
      
     #completed stay check
+    today_date = date.today()
     booking = Booking.query.filter_by(
         guest_id=current_user.id, 
         hotel_id=hotel_id, status='Confirmed'
-        ).filter(Booking.end_date<=date.today()).first()
+        ).filter(Booking.end_date<=today_date).first()
     
     if not booking:
         flash('You must cmplete a stay before reviewing.', 'warning')
