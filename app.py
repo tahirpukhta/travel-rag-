@@ -204,6 +204,19 @@ def submit_review():
         flash('You have already reviewed this hotel.', 'info')
         return redirect(url_for('hotel_details', hotel_id=hotel_id))
     
+    #process rating
+    rating_value = None #feault to none(null in db) if no rating selected or invalid
+    if rating_str:
+        try:
+            temp_rating = float(rating_str)
+            if 1.0 <= temp_rating <= 5.0:
+                rating_value = temp_rating
+            else:
+                app.logger.warning(f"Rating value out of range: {rating_str} for hotel{hotel_id}")
+        except ValueError:
+            app.logger.error(f"Invalid rating format received: {rating_str} for hotel{hotel_id}", exc_info=True)
+
+    
     #Analyze sentiment and emotion
     sentiment = analyze_sentiment(content)
     emotion = detect_emotion(content)
