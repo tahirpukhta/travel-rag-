@@ -161,16 +161,16 @@ def submit_review():
         flash('Hotel ID is missing.','danger')
         return redirect(url_for('home'))
     
-    #prevent owners reviewing their own propeety
-    if hotel.user_id == current_user.id:
-        flash('You can not review your own propeerty,','warning')
-        return redirect(url_for('hotel_details', hotel_id=hotel_id))
-    
     hotel = Hotel.query.get(hotel_id)
     if not hotel:
         flash('Hotel not found.', 'danger')
         return redirect(url_for('home'))
-    
+
+    #prevent owners reviewing their own propeety
+    if hotel.user_id == current_user.id:
+        flash('You can not review your own propeerty,','warning')
+        return redirect(url_for('hotel_details', hotel_id=hotel_id))
+     
     #completed stay check
     booking = Booking.query.filter_by(
         guest_id=current_user.id, 
@@ -184,7 +184,7 @@ def submit_review():
     #IP rate-limit check
     ip = request.remote_addr
     recent_count = Review.query.filter_by(hotel_id=hotel_id).filter(
-        Review.created_at>=datetime.utcnow()-timedelta(hours=1),
+        Review.created_at>=datetime.now()-timedelta(hours=1),
         Review.ip_address == ip
     ).count()
     if recent_count>3:
@@ -218,7 +218,7 @@ def submit_review():
     except Exception as e:
         db.session.rollback() #rollback in case of an error.
         flash(f'Error submitting review: {str(e)}', 'danger')
-        app.logger.error(f"Review submission error for hotel{hotel_id} by user {current_user.id}: {e}", ecx_info=True)
+        app.logger.error(f"Review submission error for hotel{hotel_id} by user {current_user.id}: {e}", exc_info=True)
     return redirect(url_for('hotel_details', hotel_id=hotel_id))
 
 #FAQ submission handler using incremental update method
