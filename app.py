@@ -150,6 +150,7 @@ def logout():
 def submit_review():
     hotel_id=request.form.get('hotel_id')
     content=request.form.get('content', '').strip() #sanitize input by stripping whitespace.
+    rating_str = request.form.get('rating') #get rating from form.
 
     #Role check: only customers may review
     if current_user.role != 'customer':
