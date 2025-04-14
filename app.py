@@ -280,8 +280,8 @@ def submit_faq():
     return redirect(url_for('hotel_details', hotel_id=hotel_id))
 
 #Initialize Database
-with app.app_context():
-    db.create_all()
+#with app.app_context():
+    #db.create_all()
 #run the app
 if __name__ == '__main__':
     app.run(debug=True)
