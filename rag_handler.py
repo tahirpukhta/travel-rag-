@@ -57,6 +57,7 @@ class RAGSystem:
         self.llm_deterministic = HuggingFacePipeline.from_model_id(
             model_id="google/flan-t5-base",
             task="text2text-generation",
+            device = None,
             model_kwargs={
                 "do_sample": False, 
                 "max_length": 512, 
@@ -66,6 +67,7 @@ class RAGSystem:
         self.llm_stochastic = HuggingFacePipeline.from_model_id(
             model_id="google/flan-t5-base",
             task="text2text-generation",
+            device = None,
             model_kwargs={
                 "do_sample": True,
                 "temperature": 0.2, 
