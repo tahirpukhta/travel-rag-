@@ -37,8 +37,9 @@ limiter=Limiter(app=app,
                 key_func=get_remote_address,
                 default_limits=["200 per day","50 per hour"])
 
-#Initialize RAG system with db connection.
-rag=RAGSystem(db)
+#Initialize RAG system within app context
+with app.app_context():
+    rag=RAGSystem(db)
 
 #Flask login loader
 @login_manager.user_loader
