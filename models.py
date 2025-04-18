@@ -2,7 +2,7 @@ from flask_sqlalchemy import SQLAlchemy #Enables ORM operations with Flask
 from flask_login import UserMixin # helper methods for user authentication
 from werkzeug.security import generate_password_hash, check_password_hash # provides functions to hash and check passwords
 from sqlalchemy import Enum # allows usage of a generic ENUM type across different databases
-from datetime import datetime
+from datetime import datetime, timezone
 
 #Create an instance of sqlalchemy for interacting with the database.
 db=SQLAlchemy()
@@ -35,7 +35,7 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(100), unique=True, nullable=False, index=True)
     password_hash = db.Column(db.String(255), nullable=False) #renamed from password.
     role = db.Column(user_role_enum, default='customer') #this added role will also help for RAG differentiation.
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=datetime.now(timezone.utc))
     last_login = db.Column(db.DateTime)
     #Relationships
     hotels=db.relationship('Hotel', backref='owner', lazy=True) # One user can own multiple hotels
@@ -84,8 +84,8 @@ class Room(db.Model):
     home_type = db.Column(home_type_enum, nullable=False) #type of home
     bed_count = db.Column(db.Integer, nullable=False)
     summary=db.Column(db.Text) #description of the room.
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)  # Timestamp when the room was added
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)  # Timestamp updated on each modification
+    created_at = db.Column(db.DateTime, default=datetime.now(timezone.utc))  # Timestamp when the room was added
+    updated_at = db.Column(db.DateTime, default=datetime.now(timezone.utc), onupdate=datetime.now(timezone.utc))  # Timestamp updated on each modification
     #Relationships
     amenities = db.relationship('RoomAmenity', backref='room', lazy=True) #A room has multiple amenities
     booking_details = db.relationship('BookingDetail', backref='room', lazy=True) # A room can be part of many booking details.
@@ -104,7 +104,7 @@ class Booking(db.Model):
     end_date = db.Column(db.Date, nullable=False)
     total_price = db.Column(db.Numeric(10, 2), nullable=False)  # Total price for the booking period
     status = db.Column(booking_status_enum, default='Pending')
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=datetime.now(timezone.utc))
     #Relationship
     booking_details = db.relationship('BookingDetail', backref='booking', lazy=True) # a booking can have multiple detailed entries
     
@@ -142,7 +142,7 @@ class Review(db.Model):
     sentiment= db.Column(db.String(20)) # field to store sentiment analysis result(positive, negative, neutral)
     emotion = db.Column(db.String(20)) #field to store emotion tone of the customer/reviewer
     rating = db.Column(db.Numeric(2,1)) # Numeric rating by user.
-    created_at = db.Column(db.DateTime, default=datetime.now()) #timestamp when the review was created.
+    created_at = db.Column(db.DateTime, default=datetime.now(timezone.utc)) #timestamp when the review was created.
     ip_address = db.Column(db.String(45))
 
 class Itinerary(db.Model):
@@ -151,7 +151,7 @@ class Itinerary(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     title = db.Column(db.String(150), nullable=False)
     description = db.Column(db.Text)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=datetime.now(timezone.utc))
 
 class Place(db.Model):
     __tablename__='places' 
@@ -164,7 +164,7 @@ class Place(db.Model):
     description = db.Column(db.Text) #detailed description of the place.
     hotel_id = db.Column(db.Integer, db.ForeignKey('hotels.id'))
     api_source = db.Column(db.String(50)) #source api for the place data
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=datetime.now(timezone.utc))
 
 class CustomerPreference(db.Model):
     __tablename__ = 'customer_preferences'
@@ -181,7 +181,7 @@ class APICache(db.Model):
     parameters = db.Column(db.Text, nullable=False) #parameters used in the API request(stored as text)
     response = db.Column(db.JSON, nullable=False) #the JSON response from the API stored for caching
     expires_at = db.Column(db.DateTime, nullable=False)  # Expiration timestamp for the cached API response
-    created_at = db.Column(db.DateTime, default=datetime.utcnow) #Timestamp when the cache record was created
+    created_at = db.Column(db.DateTime, default=datetime.now(timezone.utc)) #Timestamp when the cache record was created
 
 
 
