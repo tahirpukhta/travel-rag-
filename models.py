@@ -3,6 +3,7 @@ from flask_login import UserMixin # helper methods for user authentication
 from werkzeug.security import generate_password_hash, check_password_hash # provides functions to hash and check passwords
 from sqlalchemy import Enum # allows usage of a generic ENUM type across different databases
 from datetime import datetime, timezone
+import re
 
 #Create an instance of sqlalchemy for interacting with the database.
 db=SQLAlchemy()
@@ -45,8 +46,8 @@ class User(UserMixin, db.Model):
     preferences = db.relationship('CustomerPreference', backref='customer', lazy=True) #one user can have multiple customer preferences.
 
     def set_password(self, password):
-        if len(password)<8:
-            raise ValueError("Password must be at least 8 characters")
+        if not re.match(r'^(?=.*[A-Z])(?=.*[!@#$%^&*]).{8,}$', password):
+            raise ValueError("Password must contain at least 8 characters, 1 Uppercase, 1 Special Character")
         self.password_hash=generate_password_hash(password) #using werkzeug method.
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
