@@ -11,7 +11,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from datetime import datetime, timedelta, date
-from flask_wtf.csrf import CSRFProtect 
+from flask_wtf.csrf import CSRFProtect
+from flask_talisman import Talisman 
 #Flask app intialization
 app=Flask(__name__)
 
@@ -40,6 +41,12 @@ limiter=Limiter(app=app,
 
 #add csrf protection
 csrf = CSRFProtect(app)
+
+# add http security headers
+Talisman(app, content_security_policy={
+    'default-src': "'self'",
+    'style-src': ["'self'", "cdn.jsdelivr.net"],
+    'script-src': ["'self'", "cdn.jsdelivr.net"]})
 
 #Initialize RAG system within app context
 with app.app_context():
