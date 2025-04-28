@@ -78,6 +78,7 @@
                 </div>
                 <div class="card-body">
                     <form method="POST" action="{{ url_for('submit_review') }}" id="reviewForm">
+                        {{ csrf_token() }}
                         <input type="hidden" name="hotel_id" value="{{ hotel.id }}">
                         <div class="mb-3">
                             <label for="reviewContent" class="form-label">Your Experience:</label>
@@ -187,6 +188,7 @@
                         <hr>
                         <h6><i class="bi bi-patch-plus-fill"></i> Add FAQ (Owner/Admin)</h6>
                         <form method="POST" action="{{ url_for('submit_faq') }}">
+                            {{ csrf_token() }}
                             <input type="hidden" name="hotel_id" value="{{ hotel.id }}">
                             <div class="mb-2">
                                 <textarea name="question" class="form-control form-control-sm" rows="2" placeholder="Enter FAQ Question" required minlength="10"></textarea>
@@ -211,6 +213,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form method="POST" action="{{ url_for('handle_query') }}">
+                    {{ csrf_token() }}
                     <div class="modal-body">
                         <p>Ask anything about <strong>{{ hotel.name }}</strong> based on its details, FAQs, and reviews.</p>
                         <div class="mb-3">
