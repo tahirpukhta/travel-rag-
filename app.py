@@ -11,6 +11,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from datetime import datetime, timedelta, date
+from flask_wtf.csrf import CSRFProtect 
 #Flask app intialization
 app=Flask(__name__)
 
@@ -36,6 +37,9 @@ login_manager.login_view='login'
 limiter=Limiter(app=app,
                 key_func=get_remote_address,
                 default_limits=["200 per day","50 per hour"])
+
+#add csrf protection
+csrf = CSRFProtect(app)
 
 #Initialize RAG system within app context
 with app.app_context():
