@@ -9,8 +9,18 @@ from langchain.docstore.document import Document
 import hashlib #for generating cache keys
 from transformers import pipeline
 from models import db, FAQ, Review
-import numpy as np
+import os
+import logging
+from dotenv import load_dotenv
 
+#load .env for config
+load_dotenv()
+PERSIST_DIR = os.getenv("CHROMA_PERSIST_DIR", "./chroma_db")
+CACHE_PATH = os.getenv("RAG_CACHE_PATH", ".rag_cache.db")
+FAQ_CHUNK_SIZE = int(os.getenv("FAQ_CHUNK_SIZE", 500))
+FAQ_CHUNK_OVERLAP = int(os.getenv("FAQ_CHUNK_OVERLAP", 50))
+REVIEW_CHUNK_SIZE = int(os.getenv("REVIEW_CHUNK_SIZE", 500))
+REVIEW_CHUNK_OVERLAP = int(os.getenv("REVIEW_CHUNK_OVERLAP", 50))
 #Load sentiment analysis model once
 sentiment_analyzer = pipeline("sentiment-analysis", model="distilbert-base-uncased-finetuned-sst-2-english")
 
