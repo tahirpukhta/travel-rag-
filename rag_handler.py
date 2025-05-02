@@ -21,6 +21,10 @@ FAQ_CHUNK_SIZE = int(os.getenv("FAQ_CHUNK_SIZE", 500))
 FAQ_CHUNK_OVERLAP = int(os.getenv("FAQ_CHUNK_OVERLAP", 50))
 REVIEW_CHUNK_SIZE = int(os.getenv("REVIEW_CHUNK_SIZE", 500))
 REVIEW_CHUNK_OVERLAP = int(os.getenv("REVIEW_CHUNK_OVERLAP", 50))
+
+logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO)
+
 #Load sentiment analysis model once
 sentiment_analyzer = pipeline("sentiment-analysis", model="distilbert-base-uncased-finetuned-sst-2-english")
 
